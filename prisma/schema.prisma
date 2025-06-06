@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  username            String    @unique @db.VarChar(50)
+  email               String    @unique @db.VarChar(255)
+  passwordHash        String    @db.VarChar(255)
+  role                UserRole
+  emailVerified       Boolean   @default(false)
+  failedLoginAttempts Int       @default(0)
+  lastFailedLogin     DateTime?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
+  notifications       Notification[]
+
+  @@map("users")
+}
+
+model Photo {
+  id          Int       @id @default(autoincrement())
+  url         String    @unique
+  title       String?   @db.VarChar(70)
+  notes       String?   @db.VarChar(1000)
+  date        DateTime?
+  isFamilyOnly Boolean  @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  tags        Tag[]
+  albums      Album[]
+
+  @@map("photos")
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(20)
+  photos    Photo[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tags")
+}
+
+model Album {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(20)
+  photos    Photo[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("albums")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  isRead    Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("notifications")
+} 
