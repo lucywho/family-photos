@@ -29,7 +29,7 @@ export default function WelcomePage() {
         {/* Login Section */}
         <LoginForm />
 
-        {/* Register Section */}
+        {/* Register Section to be implemented */}
         <Card className='mb-4'>
           <CardHeader>Register</CardHeader>
           <CardContent>
@@ -65,7 +65,7 @@ export default function WelcomePage() {
           </CardContent>
         </Card>
 
-        {/* Guest Section */}
+        {/* Guest Section to be implemented */}
         <Card>
           <CardHeader>Continue as Guest</CardHeader>
           <CardDescription>
