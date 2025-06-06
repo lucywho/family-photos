@@ -1,26 +1,57 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Color scheme */
+    --background: 210 13% 16%; /* #212a31 */
+    --background-secondary: 210 13% 22%; /* #2e3944 */
+    --primary: 197 70% 35%; /* #1b7498 */
+    --primary-hover: 199 68% 20%; /* #0f3d52 */
+    --secondary: 188 11% 86%; /* #d8dfe0 */
+    --text: 130 7% 98%; /* #f9faf9 */
+
+    /* Semantic colors */
+    --card-background: var(--background);
+    --card-border: var(--background-secondary);
+    --input-background: var(--background);
+    --input-border: var(--background-secondary);
+    --input-text: var(--text);
+    --input-placeholder: var(--secondary);
+    --focus-ring: var(--primary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--text))];
+  }
+}
+
+@layer utilities {
+  .bg-primary {
+    @apply bg-[hsl(var(--primary))];
+  }
+  .bg-primary-hover {
+    @apply bg-[hsl(var(--primary-hover))];
+  }
+  .bg-secondary {
+    @apply bg-[hsl(var(--secondary))];
+  }
+  .text-primary {
+    @apply text-[hsl(var(--primary))];
+  }
+  .text-secondary {
+    @apply text-[hsl(var(--secondary))];
+  }
+  .text-text {
+    @apply text-[hsl(var(--text))];
+  }
+  .border-primary {
+    @apply border-[hsl(var(--primary))];
+  }
+  .border-secondary {
+    @apply border-[hsl(var(--background-secondary))];
+  }
 }

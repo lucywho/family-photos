@@ -1,12 +1,4 @@
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Camera } from 'lucide-react';
 import {
@@ -17,78 +9,119 @@ import {
 
 export default function WelcomePage() {
   return (
-    <main className='min-h-screen bg-[#212a31] flex flex-col items-center justify-center p-4'>
-      <div className='w-full max-w-md space-y-8'>
-        <div className='text-center'>
-          <Camera className='mx-auto h-12 w-12 text-[#124e66]' />
-          <h1 className='mt-6 text-3xl font-bold tracking-tight text-[#d3d9d4]'>
-            {APP_NAME}
-          </h1>
-          <p className='mt-2 text-sm text-[#748d92]'>{APP_DESCRIPTION}</p>
-        </div>
+    <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
+      <div className='max-w-[400px] mx-auto'>
+        {/* Header Section */}
+        <section className='text-center pb-8'>
+          <Camera className='mx-auto text-primary' size={48} />
+          <h1 className='text-3xl font-bold mt-4'>{APP_NAME}</h1>
+          <p className='text-secondary mt-2'>{APP_DESCRIPTION}</p>
+        </section>
 
-        <div className='mt-8 space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Login</CardTitle>
-              <CardDescription>
-                Enter your credentials to access your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className='space-y-4'>
-                <div className='space-y-2'>
-                  <Input type='text' placeholder='Username or email' required />
+        {/* Login Section */}
+        <section className='pb-6'>
+          <div className='border border-[hsl(var(--card-border))] bg-background rounded-lg'>
+            <div className='p-6 border-b border-[hsl(var(--card-border))]'>
+              <h2 className='text-2xl font-semibold text-center'>Login</h2>
+            </div>
+            <div className='p-6'>
+              <form className='space-y-6'>
+                <div className='px-4'>
+                  <Input
+                    type='text'
+                    name='username'
+                    placeholder='Username or email'
+                    required
+                  />
                 </div>
-                <div className='space-y-2'>
-                  <Input type='password' placeholder='Password' required />
+                <div className='px-4'>
+                  <Input
+                    type='password'
+                    name='password'
+                    placeholder='Password'
+                    required
+                  />
                 </div>
-                <Button className='w-full' type='submit'>
-                  Login
-                </Button>
+                <div className='px-4'>
+                  <Button type='submit' className='w-full'>
+                    Login
+                  </Button>
+                </div>
               </form>
-            </CardContent>
-            <CardFooter className='flex flex-col space-y-2'>
-              <Button variant='link' className='w-full'>
-                Forgot password?
-              </Button>
-            </CardFooter>
-          </Card>
+              <div className='mt-4 px-4'>
+                <Button variant='link' className='w-full'>
+                  Forgot password?
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Register</CardTitle>
-              <CardDescription>
-                Create a new account to access family photos
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className='space-y-4'>
-                <div className='space-y-2'>
-                  <Input type='text' placeholder='Username' required />
+        {/* Register Section */}
+        <section className='pb-6'>
+          <div className='border border-[hsl(var(--card-border))] bg-background rounded-lg'>
+            <div className='p-6 border-b border-[hsl(var(--card-border))]'>
+              <h2 className='text-2xl font-semibold text-center'>Register</h2>
+            </div>
+            <div className='p-6'>
+              <form className='space-y-6'>
+                <div className='px-4'>
+                  <Input
+                    type='text'
+                    name='username'
+                    placeholder='Username'
+                    required
+                  />
                 </div>
-                <div className='space-y-2'>
-                  <Input type='email' placeholder='Email address' required />
+                <div className='px-4'>
+                  <Input
+                    type='email'
+                    name='email'
+                    placeholder='Email'
+                    required
+                  />
                 </div>
-                <div className='space-y-2'>
-                  <Input type='password' placeholder='Password' required />
-                  <p className='text-xs text-[#748d92]'>
+                <div className='px-4'>
+                  <Input
+                    type='password'
+                    name='password'
+                    placeholder='Password'
+                    required
+                  />
+                  <p className='text-xs text-secondary mt-2'>
                     {PASSWORD_REQUIREMENTS}
                   </p>
                 </div>
-                <Button className='w-full' type='submit'>
-                  Register
-                </Button>
+                <div className='px-4'>
+                  <Button type='submit' className='w-full'>
+                    Register
+                  </Button>
+                </div>
               </form>
-            </CardContent>
-          </Card>
-
-          <div className='text-center'>
-            <Button variant='secondary' className='w-full'>
-              Continue as Guest
-            </Button>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Guest Section */}
+        <section>
+          <div className='border border-[hsl(var(--card-border))] bg-background rounded-lg'>
+            <div className='p-6 border-b border-[hsl(var(--card-border))]'>
+              <h2 className='text-2xl font-semibold text-center'>
+                Continue as Guest
+              </h2>
+              <p className='text-sm text-secondary mt-2 text-center'>
+                View public photos without an account
+              </p>
+            </div>
+            <div className='p-6'>
+              <div className='px-4'>
+                <Button variant='secondary' className='w-full'>
+                  Continue as Guest
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );
