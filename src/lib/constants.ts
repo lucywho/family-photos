@@ -1,0 +1,22 @@
+export const APP_NAME = 'Family Photos';
+export const APP_DESCRIPTION = 'View and manage your family photos';
+
+// Auth constants
+export const PASSWORD_MIN_LENGTH = 6;
+export const PASSWORD_REQUIREMENTS =
+  'Password must be at least 6 characters and include a lowercase letter, uppercase letter, and a number';
+
+// Form constants
+export const MAX_TITLE_LENGTH = 70;
+export const MAX_NOTES_LENGTH = 1000;
+export const MAX_TAG_LENGTH = 20;
+export const MAX_ALBUM_NAME_LENGTH = 20;
+
+// Date format
+export const DATE_FORMAT = 'dd/mm/yyyy';
+
+// Session timeout (in minutes)
+export const SESSION_TIMEOUT = 30;
+
+// Pagination
+export const ITEMS_PER_PAGE = 12;
