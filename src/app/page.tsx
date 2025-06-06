@@ -13,6 +13,7 @@ import {
   APP_DESCRIPTION,
   PASSWORD_REQUIREMENTS,
 } from '@/lib/constants';
+import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function WelcomePage() {
   return (
@@ -26,42 +27,9 @@ export default function WelcomePage() {
         </section>
 
         {/* Login Section */}
-        <Card className='mb-4'>
-          <CardHeader>Login</CardHeader>
-          <CardContent>
-            <form className='space-y-4'>
-              <div className='px-4'>
-                <Input
-                  type='text'
-                  name='username'
-                  placeholder='Username or email'
-                  required
-                />
-              </div>
-              <div className='px-4'>
-                <Input
-                  type='password'
-                  name='password'
-                  placeholder='Password'
-                  required
-                />
-              </div>
-              <div className='px-4'>
-                <Button type='submit' className='w-full'>
-                  Login
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-          <CardFooter>
-            <Button variant='link' className='w-full'>
-              Forgot password?
-            </Button>
-          </CardFooter>
-        </Card>
+        <LoginForm />
 
         {/* Register Section */}
-
         <Card className='mb-4'>
           <CardHeader>Register</CardHeader>
           <CardContent>
