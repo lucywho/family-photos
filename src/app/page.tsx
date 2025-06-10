@@ -1,83 +1,99 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Card,
   CardHeader,
   CardFooter,
   CardDescription,
-  CardContent,
 } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
-import {
-  APP_NAME,
-  APP_DESCRIPTION,
-  PASSWORD_REQUIREMENTS,
-} from '@/lib/constants';
+import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { RegisterForm } from '@/components/auth/RegisterForm';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { continueAsGuest } from './actions/auth';
 
 export default function WelcomePage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGuestAccess = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Get guest user data
+      const guestUser = await continueAsGuest();
+
+      // Sign in as guest
+      const result = await signIn('credentials', {
+        email: guestUser.email,
+        password: '', // Empty password for guest
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      // Redirect to albums page
+      router.push('/albums');
+      router.refresh();
+    } catch (err) {
+      setError('Failed to continue as guest. Please try again.');
+      console.error('Guest access error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
-      <div className='max-w-[400px] mx-auto'>
+      <div className='max-w-[400px] lg:md:max-w-[1200px] mx-auto'>
         {/* Header Section */}
         <section className='text-center pb-8'>
           <Camera className='mx-auto text-primary' size={48} />
           <h1 className='text-3xl font-bold mt-4'>{APP_NAME}</h1>
           <p className='text-secondary mt-2'>{APP_DESCRIPTION}</p>
         </section>
+        <section className='flex flex-col lg:flex-row lg:justify-between'>
+          {/* Login Section */}
+          <LoginForm />
 
-        {/* Login Section */}
-        <LoginForm />
+          {/* Register Section */}
+          <Card className='mb-4 lg:mx-6 flex-1'>
+            <CardHeader>Create an Account</CardHeader>
+            <CardDescription className='my-4 px-6'>
+              Join the Family Photos app to view and manage family photos.
+            </CardDescription>
+            <RegisterForm />
+          </Card>
 
-        {/* Register Section to be implemented */}
-        <Card className='mb-4'>
-          <CardHeader>Register</CardHeader>
-          <CardContent>
-            <form className='space-y-4'>
-              <div className='px-4'>
-                <Input
-                  type='text'
-                  name='username'
-                  placeholder='Username'
-                  required
-                />
-              </div>
-              <div className='px-4'>
-                <Input type='email' name='email' placeholder='Email' required />
-              </div>
-              <div className='px-4'>
-                <Input
-                  type='password'
-                  name='password'
-                  placeholder='Password'
-                  required
-                />
-                <p className='text-xs text-secondary mt-4'>
-                  {PASSWORD_REQUIREMENTS}
-                </p>
-              </div>
-              <div className='px-4'>
-                <Button type='submit' className='w-full'>
-                  Register
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Guest Section to be implemented */}
-        <Card>
-          <CardHeader>Continue as Guest</CardHeader>
-          <CardDescription>
-            View public photos without an account
-          </CardDescription>
-
-          <CardFooter>
-            <Button variant='secondary' className='w-full'>
-              Continue as Guest
-            </Button>
-          </CardFooter>
-        </Card>
+          {/* Guest Section */}
+          <Card className='max-h-[33vh] p-4 flex-1'>
+            <CardHeader>Continue as Guest</CardHeader>
+            <CardDescription>
+              View public photos without an account
+            </CardDescription>
+            {error && (
+              <div className='px-6 text-sm text-red-500 mb-4'>{error}</div>
+            )}
+            <CardFooter>
+              <Button
+                variant='default'
+                className='w-full'
+                onClick={handleGuestAccess}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Continuing as guest...' : 'Continue as Guest'}
+              </Button>
+            </CardFooter>
+          </Card>
+        </section>
       </div>
     </main>
   );

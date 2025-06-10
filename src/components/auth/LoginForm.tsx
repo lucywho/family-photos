@@ -48,11 +48,11 @@ export function LoginForm() {
   }
 
   return (
-    <Card className='mb-4'>
+    <Card className='mb-4 max-h-[33vh] flex-1'>
       <CardHeader>Login</CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className='space-y-4'>
-          <div className='px-4'>
+          <div className='px-2'>
             <Input
               type='text'
               name='username'
@@ -61,7 +61,7 @@ export function LoginForm() {
               disabled={isLoggingIn}
             />
           </div>
-          <div className='px-4'>
+          <div className='px-2'>
             <Input
               type='password'
               name='password'
@@ -71,9 +71,9 @@ export function LoginForm() {
             />
           </div>
           {loginError && (
-            <div className='px-4 text-sm text-red-500'>{loginError}</div>
+            <div className='px-2 text-sm text-red-500'>{loginError}</div>
           )}
-          <div className='px-4'>
+          <div className='px-2'>
             <Button type='submit' className='w-full' disabled={isLoggingIn}>
               {isLoggingIn ? 'Logging in...' : 'Login'}
             </Button>

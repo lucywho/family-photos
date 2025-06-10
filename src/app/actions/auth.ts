@@ -1,15 +1,31 @@
+'use server';
+
 import { prisma } from '@/lib/db';
 import { hash } from 'bcryptjs';
 import { UserRole } from '@prisma/client';
+import { sendVerificationEmail } from '@/lib/email';
 
-export async function register(formData: FormData) {
+type RegisterState = {
+  error: string | null;
+  success: boolean;
+};
+
+export async function register(
+  prevState: RegisterState,
+  formData: FormData
+): Promise<RegisterState> {
   const username = formData.get('username') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
+  const privacyAgreement = formData.get('privacyAgreement') === 'true';
 
   // Validate input
   if (!username || !email || !password) {
-    return { error: 'All fields are required' };
+    return { error: 'All fields are required', success: false };
+  }
+
+  if (!privacyAgreement) {
+    return { error: 'You must agree to the privacy policy', success: false };
   }
 
   // Validate password requirements
@@ -18,6 +34,7 @@ export async function register(formData: FormData) {
     return {
       error:
         'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
+      success: false,
     };
   }
 
@@ -30,7 +47,7 @@ export async function register(formData: FormData) {
     });
 
     if (existingUser) {
-      return { error: 'Username or email already exists' };
+      return { error: 'Username or email already exists', success: false };
     }
 
     // Determine role based on email domain
@@ -41,7 +58,7 @@ export async function register(formData: FormData) {
     // Hash password
     const passwordHash = await hash(password, 10);
 
-    // Create user and verification token in a transaction
+    // Create user in a transaction
     await prisma.$transaction(async (tx) => {
       await tx.user.create({
         data: {
@@ -51,27 +68,6 @@ export async function register(formData: FormData) {
           role,
           emailVerified: false,
         },
-      });
-
-      const verificationToken = await tx.verificationToken.create({
-        data: {
-          identifier: email,
-          token: crypto.randomUUID(),
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        },
-      });
-
-      // Send verification email via API
-      await fetch('/api/auth/send-verification-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          username,
-          token: verificationToken.token,
-        }),
       });
 
       // If user is not an admin, notify admins
@@ -91,15 +87,33 @@ export async function register(formData: FormData) {
       }
     });
 
-    return { success: true };
+    // Send verification email outside transaction
+    try {
+      await sendVerificationEmail({
+        email,
+        username,
+      });
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      // Don't throw here - we still want the registration to succeed
+      // The user can request a new verification email if needed
+    }
+
+    return { success: true, error: null };
   } catch (error) {
     console.error('Registration error:', error);
-    return { error: 'An error occurred during registration' };
+    return { error: 'An error occurred during registration', success: false };
   }
 }
 
-export async function verifyEmail(token: string) {
+type VerifyEmailState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function verifyEmail(token: string): Promise<VerifyEmailState> {
   try {
+    // Find the verification token
     const verificationToken = await prisma.verificationToken.findUnique({
       where: { token },
     });
@@ -108,13 +122,16 @@ export async function verifyEmail(token: string) {
       return { error: 'Invalid verification token' };
     }
 
+    // Check if token has expired
     if (verificationToken.expires < new Date()) {
+      // Delete expired token
       await prisma.verificationToken.delete({
         where: { token },
       });
       return { error: 'Verification token has expired' };
     }
 
+    // Find the user by email (identifier)
     const user = await prisma.user.findUnique({
       where: { email: verificationToken.identifier },
     });
@@ -123,7 +140,7 @@ export async function verifyEmail(token: string) {
       return { error: 'User not found' };
     }
 
-    // Update user and delete token
+    // Update user and delete token in a transaction
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
@@ -136,8 +153,8 @@ export async function verifyEmail(token: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Email verification error:', error);
-    return { error: 'An error occurred during email verification' };
+    console.error('Error verifying email:', error);
+    return { error: 'Failed to verify email' };
   }
 }
 
@@ -194,4 +211,32 @@ export async function confirmPasswordReset(token: string, newPassword: string) {
   await prisma.verificationToken.delete({
     where: { token },
   });
+}
+
+export async function continueAsGuest() {
+  try {
+    // Create a temporary guest user if it doesn't exist
+    const guestUser = await prisma.user.upsert({
+      where: { email: 'guest@family-photos.app' },
+      update: {},
+      create: {
+        username: 'Guest',
+        email: 'guest@family-photos.app',
+        passwordHash: '', // Empty password since guest can't log in
+        role: UserRole.GUEST,
+        emailVerified: true, // Guest doesn't need email verification
+      },
+    });
+
+    // Return the guest user data for session creation
+    return {
+      id: guestUser.id.toString(),
+      email: guestUser.email,
+      name: guestUser.username,
+      role: guestUser.role,
+    };
+  } catch (error) {
+    console.error('Error in continueAsGuest:', error);
+    throw new Error('Failed to continue as guest');
+  }
 }

@@ -11,8 +11,8 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 60, // 30 minutes
   },
   pages: {
-    signIn: '/login',
-    error: '/login',
+    signIn: '/',
+    error: '/',
     verifyRequest: '/verify-request',
     newUser: '/register',
   },
@@ -24,7 +24,30 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email) {
+          throw new Error('Invalid credentials');
+        }
+
+        // Handle guest access
+        if (credentials.email === 'guest@family-photos.app') {
+          const guestUser = await prisma.user.findUnique({
+            where: { email: 'guest@family-photos.app' },
+          });
+
+          if (!guestUser) {
+            throw new Error('Guest access not available');
+          }
+
+          return {
+            id: guestUser.id.toString(),
+            email: guestUser.email,
+            name: guestUser.username,
+            role: guestUser.role,
+          };
+        }
+
+        // Regular user login
+        if (!credentials?.password) {
           throw new Error('Invalid credentials');
         }
 
