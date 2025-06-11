@@ -6,6 +6,10 @@ import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_S3_BUCKET_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
 interface Album {
@@ -68,9 +72,11 @@ export async function GET(request: Request) {
         },
         photos: {
           take: 1,
-          orderBy: {
-            id: 'asc',
-          },
+          orderBy: [
+            {
+              id: 'asc',
+            },
+          ],
           select: {
             url: true,
           },
@@ -88,13 +94,28 @@ export async function GET(request: Request) {
     }
 
     // Transform the data to match the frontend interface
-    const transformedAlbums = albums.map((album: Album) => ({
-      id: album.id.toString(),
-      name: album.name,
-      photoCount: album._count.photos,
-      // Only include thumbnailUrl if S3 is available
-      thumbnailUrl: isS3Available ? album.photos[0]?.url : undefined,
-    }));
+    const transformedAlbums = albums.map((album: Album) => {
+      let thumbnailUrl: string | undefined;
+
+      if (isS3Available && album.photos[0]?.url) {
+        const photoUrl = album.photos[0].url;
+        // Use proxy only in development/local environment
+        if (process.env.NEXT_PUBLIC_APP_URL?.includes('localhost')) {
+          thumbnailUrl = `/api/photos/proxy?key=${encodeURIComponent(
+            photoUrl.split('/').pop() || ''
+          )}`;
+        } else {
+          thumbnailUrl = photoUrl;
+        }
+      }
+
+      return {
+        id: album.id.toString(),
+        name: album.name,
+        photoCount: album._count.photos,
+        thumbnailUrl,
+      };
+    });
 
     // Always return album data, even if S3 is unavailable
     return NextResponse.json({
