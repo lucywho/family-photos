@@ -10,6 +10,12 @@ type RegisterState = {
   success: boolean;
 };
 
+if (!process.env.ADMIN_EMAIL_DOMAIN) {
+  throw new Error('ADMIN_EMAIL_DOMAIN environment variable is not set');
+}
+
+const adminEmail = process.env.ADMIN_EMAIL_DOMAIN;
+
 export async function register(
   prevState: RegisterState,
   formData: FormData
@@ -51,9 +57,7 @@ export async function register(
     }
 
     // Determine role based on email domain
-    const role = email.endsWith('@toman.me.uk')
-      ? UserRole.ADMIN
-      : UserRole.GUEST;
+    const role = email.endsWith(adminEmail) ? UserRole.ADMIN : UserRole.GUEST;
 
     // Hash password
     const passwordHash = await hash(password, 10);
