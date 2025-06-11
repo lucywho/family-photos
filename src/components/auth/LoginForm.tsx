@@ -2,21 +2,16 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardContent,
-} from '@/components/ui/card';
+
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Link from 'next/link';
 
 export function LoginForm() {
   const router = useRouter();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,43 +43,42 @@ export function LoginForm() {
   }
 
   return (
-    <Card className='mb-4 max-h-[33vh] flex-1'>
-      <CardHeader>Login</CardHeader>
-      <CardContent>
-        <form onSubmit={handleLogin} className='space-y-4'>
-          <div className='px-2'>
-            <Input
-              type='text'
-              name='username'
-              placeholder='Email address'
-              required
-              disabled={isLoggingIn}
-            />
-          </div>
-          <div className='px-2'>
-            <Input
-              type='password'
-              name='password'
-              placeholder='Password'
-              required
-              disabled={isLoggingIn}
-            />
-          </div>
-          {loginError && (
-            <div className='px-2 text-sm text-red-500'>{loginError}</div>
-          )}
-          <div className='px-2'>
-            <Button type='submit' className='w-full' disabled={isLoggingIn}>
-              {isLoggingIn ? 'Logging in...' : 'Login'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Button variant='link' className='w-full' asChild>
-          <Link href='/reset-password'>Forgot password?</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <>
+      <form onSubmit={handleLogin} className='space-y-4'>
+        <div className='px-2'>
+          <Input
+            type='text'
+            name='username'
+            placeholder='Email address'
+            required
+            disabled={isLoggingIn}
+          />
+        </div>
+        <div className='px-2 relative'>
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            name='password'
+            placeholder='Password'
+            required
+            disabled={isLoggingIn}
+          />
+          <button
+            type='button'
+            className='absolute right-0 top-0 h-full mr-4 py-2 text-sm text-primary'
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
+        </div>
+        {loginError && (
+          <div className='px-2 text-sm text-red-500'>{loginError}</div>
+        )}
+        <div className='px-2'>
+          <Button type='submit' className='w-full' disabled={isLoggingIn}>
+            {isLoggingIn ? 'Logging in...' : 'Login'}
+          </Button>
+        </div>
+      </form>
+    </>
   );
 }

@@ -160,7 +160,8 @@ export async function verifyEmail(token: string): Promise<VerifyEmailState> {
 
 export async function resetPassword(email: string) {
   try {
-    const response = await fetch('/api/auth/send-reset-email', {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/auth/send-reset-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -169,7 +170,8 @@ export async function resetPassword(email: string) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send reset email');
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to send reset email');
     }
   } catch (error) {
     console.error('Error in resetPassword action:', error);
@@ -197,20 +199,21 @@ export async function confirmPasswordReset(token: string, newPassword: string) {
   // Hash the new password
   const hashedPassword = await hash(newPassword, 10);
 
-  // Update the user's password and reset failed login attempts
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      passwordHash: hashedPassword,
-      failedLoginAttempts: 0,
-      lastFailedLogin: null,
-    },
-  });
-
-  // Delete the used token
-  await prisma.verificationToken.delete({
-    where: { token },
-  });
+  // Update the user's password and reset failed login attempts in a transaction
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: hashedPassword,
+        failedLoginAttempts: 0,
+        lastFailedLogin: null,
+      },
+    }),
+    // Delete the used token
+    prisma.verificationToken.delete({
+      where: { token },
+    }),
+  ]);
 }
 
 export async function continueAsGuest() {

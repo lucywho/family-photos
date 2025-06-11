@@ -20,6 +20,7 @@ export function ConfirmResetPasswordForm({
   const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,25 +47,39 @@ export function ConfirmResetPasswordForm({
   return (
     <form onSubmit={handleSubmit}>
       <CardContent className='space-y-4'>
-        <div className='space-y-2'>
+        <div className='space-y-2 relative'>
           <Input
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             placeholder='New password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isLoading}
           />
+          <button
+            type='button'
+            className='absolute right-0 top-0 h-full mr-4 py-2 text-sm text-primary'
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
-        <div className='space-y-2'>
+        <div className='space-y-2 relative'>
           <Input
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             placeholder='Confirm new password'
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             disabled={isLoading}
           />
+          <button
+            type='button'
+            className='absolute right-0 top-0 h-full mr-4 py-2 text-sm text-primary'
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
         <p className='text-xs text-secondary'>{PASSWORD_REQUIREMENTS}</p>
         {error && <div className='text-sm text-red-500'>{error}</div>}

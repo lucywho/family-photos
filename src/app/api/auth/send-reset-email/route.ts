@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
-      subject: 'Reset your password',
+      subject: 'Family Photos: Reset your password',
       html: `
         <p>You requested a password reset.</p>
         <p>Click <a href="${resetUrl}">here</a> to reset your password.</p>

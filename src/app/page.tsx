@@ -6,15 +6,17 @@ import {
   CardHeader,
   CardFooter,
   CardDescription,
+  CardContent,
 } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 import { LoginForm } from '@/components/auth/LoginForm';
-import { RegisterForm } from '@/components/auth/RegisterForm';
+import { RegistrationForm } from '@/components/auth/RegistrationForm';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { continueAsGuest } from './actions/auth';
+import Link from 'next/link';
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -62,7 +64,18 @@ export default function WelcomePage() {
         </section>
         <section className='flex flex-col lg:flex-row lg:justify-between'>
           {/* Login Section */}
-          <LoginForm />
+          <Card className='mb-4 max-h-[33vh] flex-1'>
+            <CardHeader>Login</CardHeader>
+            <CardContent>
+              <LoginForm />
+            </CardContent>
+
+            <CardFooter>
+              <Button variant='link' className='w-full' asChild>
+                <Link href='/reset-password'>Forgot password?</Link>
+              </Button>
+            </CardFooter>
+          </Card>
 
           {/* Register Section */}
           <Card className='mb-4 lg:mx-6 flex-1'>
@@ -70,7 +83,7 @@ export default function WelcomePage() {
             <CardDescription className='my-4 px-6'>
               Join the Family Photos app to view and manage family photos.
             </CardDescription>
-            <RegisterForm />
+            <RegistrationForm />
           </Card>
 
           {/* Guest Section */}

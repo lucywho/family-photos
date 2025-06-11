@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useActionState } from 'react';
 import { useRouter } from 'next/navigation';
 import { register } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { useActionState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -45,7 +44,7 @@ const initialState = {
   success: false,
 };
 
-export function RegisterForm() {
+export function RegistrationForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState(register, initialState);
@@ -85,7 +84,7 @@ export function RegisterForm() {
         <Button
           variant='secondary'
           className='w-full'
-          onClick={() => router.push('/login')}
+          onClick={() => router.push('/')}
         >
           Go to Login
         </Button>
