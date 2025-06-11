@@ -41,5 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # utility scripts
-scripts/generate-password-hash.mjs
-scripts/create-admin.ts
+scripts/*

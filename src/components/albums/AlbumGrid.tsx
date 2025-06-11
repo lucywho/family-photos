@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,7 +44,13 @@ function AlbumCard({
                 src={album.thumbnailUrl}
                 alt={`${album.name} thumbnail`}
                 className='object-cover w-full h-full'
-                onError={() => setImageError(true)}
+                onError={(e) => {
+                  console.error(
+                    `Failed to load image for album ${album.name}:`,
+                    e
+                  );
+                  setImageError(true);
+                }}
               />
             ) : (
               <div className='w-full h-full flex items-center justify-center'>
