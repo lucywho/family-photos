@@ -4,13 +4,9 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Home, LogOut } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { APP_NAME } from '@/lib/constants';
+import { Camera } from 'lucide-react';
 
 export function Header() {
   const pathname = usePathname();
@@ -28,21 +24,29 @@ export function Header() {
   };
 
   return (
-    <header className='bg-[hsl(var(--background))] text-[hsl(var(--text))] py-4 px-6'>
-      <div className='container mx-auto flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
+    <header className='bg-background text-primary py-4 px-6 border border-primary border-t-0 border-x-0'>
+      <div className='container mx-auto flex flex-col md:flex-row items-center justify-between'>
+        <div className='flex md:flex-row items-center gap-4'>
+          <Camera className='mx-auto text-primary h-9 w-9 md:h-12 md:w-12' />
           <Link
             href='/'
-            className='text-xl font-semibold hover:text-[hsl(var(--secondary))] transition-colors'
+            className='text-2xl md:text-3xl font-semibold hover:text-secondary transition-colors'
           >
-            Family Photos
+            {APP_NAME}
           </Link>
+        </div>
+
+        <div className='flex items-center gap-4'>
+          <div className='px-3 py-1 rounded-full bg-primary text-text text-sm font-medium'>
+            {username}
+          </div>
+
           {showHomeButton && (
             <Button
               variant='ghost'
               size='sm'
               asChild
-              className='text-[hsl(var(--text))] hover:text-[hsl(var(--secondary))] hover:bg-[hsl(var(--background-secondary))]'
+              className='text-text hover:text-primary hover:bg-secondary'
             >
               <Link href='/'>
                 <Home className='h-4 w-4 mr-2' />
@@ -55,33 +59,18 @@ export function Header() {
               variant='ghost'
               size='sm'
               asChild
-              className='text-[hsl(var(--text))] hover:text-[hsl(var(--secondary))] hover:bg-[hsl(var(--background-secondary))]'
+              className='text-text hover:text-primary hover:bg-secondary'
             >
               <Link href='/albums'>Back to album</Link>
             </Button>
           )}
-        </div>
-
-        <div className='flex items-center gap-4'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className='w-8 h-8 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-[hsl(var(--text))] font-semibold'>
-                  {username.charAt(0).toUpperCase()}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{username}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
           {session && (
             <Button
               variant='ghost'
               size='sm'
               onClick={handleLogout}
-              className='text-[hsl(var(--text))] hover:text-[hsl(var(--secondary))] hover:bg-[hsl(var(--background-secondary))]'
+              className='text-text hover:text-primary hover:bg-secondary'
             >
               <LogOut className='h-4 w-4 mr-2' />
               Log out

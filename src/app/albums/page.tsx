@@ -8,8 +8,7 @@ import { AlbumSkeleton } from '@/components/albums/AlbumSkeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-
-const ALBUMS_PER_PAGE = 12;
+import { ALBUMS_PER_PAGE } from '@/lib/constants';
 
 interface Album {
   id: string;
@@ -26,7 +25,10 @@ interface AlbumsResponse {
 
 async function fetchAlbums(page: number): Promise<AlbumsResponse> {
   const response = await fetch(
-    `/api/albums?page=${page}&limit=${ALBUMS_PER_PAGE}`
+    `/api/albums?page=${page}&limit=${ALBUMS_PER_PAGE}`,
+    {
+      credentials: 'include',
+    }
   );
   if (!response.ok) {
     throw new Error('Failed to fetch albums');

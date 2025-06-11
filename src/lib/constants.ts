@@ -20,3 +20,6 @@ export const SESSION_TIMEOUT = 30;
 
 // Pagination
 export const ITEMS_PER_PAGE = 12;
+
+// Album page
+export const ALBUMS_PER_PAGE = 12;

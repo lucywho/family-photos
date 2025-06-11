@@ -12,7 +12,7 @@ import { Camera } from 'lucide-react';
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegistrationForm } from '@/components/auth/RegistrationForm';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { continueAsGuest } from './actions/auth';
@@ -28,6 +28,9 @@ export default function WelcomePage() {
     setError(null);
 
     try {
+      // Sign out any existing session first
+      await signOut({ redirect: false });
+
       // Get guest user data
       const guestUser = await continueAsGuest();
 
