@@ -95,6 +95,7 @@ export function RegistrationForm() {
   return (
     <Form {...form}>
       <form
+        data-testid='registration-form'
         onSubmit={form.handleSubmit(onSubmit)}
         className='space-y-4 p-6'
         method='POST'
@@ -115,6 +116,7 @@ export function RegistrationForm() {
               <FormControl>
                 <Input
                   {...field}
+                  data-testid='username-input'
                   type='text'
                   placeholder='Choose a username'
                   required
@@ -134,6 +136,7 @@ export function RegistrationForm() {
               <FormControl>
                 <Input
                   {...field}
+                  data-testid='email-input'
                   type='email'
                   placeholder='Enter your email'
                   required
@@ -154,24 +157,29 @@ export function RegistrationForm() {
                 <div className='relative'>
                   <Input
                     {...field}
+                    data-testid='password-input'
                     type={showPassword ? 'text' : 'password'}
                     placeholder='Create a password'
                     required
                   />
                   <Button
+                    data-testid='show-password-button'
                     type='button'
                     variant='ghost'
                     size='sm'
-                    className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
+                    className='absolute right-0 top-[-10px] px-3 hover:bg-transparent text-primary'
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </Button>
                 </div>
               </FormControl>
-              <div className='mt-2 text-sm text-muted-foreground'>
+              <div className='mt-2 text-xs text-muted-foreground'>
                 Password must:
-                <ul className='list-disc pl-4'>
+                <ul
+                  data-testid='password-requirements'
+                  className='list-disc pl-4'
+                >
                   <li>Be at least 6 characters long</li>
                   <li>Include a lowercase letter</li>
                   <li>Include an uppercase letter</li>
@@ -190,6 +198,7 @@ export function RegistrationForm() {
             <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
               <FormControl>
                 <Checkbox
+                  data-testid='privacy-agreement-check'
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   required
@@ -197,7 +206,10 @@ export function RegistrationForm() {
               </FormControl>
               <div className='space-y-1 leading-none'>
                 <FormLabel>Privacy Agreement</FormLabel>
-                <div className='text-sm text-muted-foreground'>
+                <div
+                  data-testid='privacy-statement'
+                  className='text-sm text-muted-foreground'
+                >
                   I agree to the storage and processing of my personal data
                   (username, email address, and password) for the purpose of
                   accessing the Family Photos app. My data will be used solely
@@ -218,7 +230,12 @@ export function RegistrationForm() {
 
 function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
-    <Button type='submit' className='w-full' disabled={isPending}>
+    <Button
+      data-testid='submit-registration-button'
+      type='submit'
+      className='w-full'
+      disabled={isPending}
+    >
       {isPending ? 'Registering...' : 'Register'}
     </Button>
   );
