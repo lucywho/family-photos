@@ -11,7 +11,9 @@
     --primary-hover: 199 68% 20%; /* #0f3d52 */
     --secondary: 188 11% 86%; /* #d8dfe0 */
     --text: 130 7% 98%; /* #f9faf9 */
-    --destructive: 26 100%, 66%;
+    --destructive: 4 99% 66%; /* #FE5F55 */
+    --success: 101 78% 64%; /* #89EB5C */
+    --warning: 13 97% 66%; /* #FC7753 */
 
     /* Semantic colors */
     --card-background: var(--background);
@@ -49,8 +51,14 @@
   .text-text {
     @apply text-[hsl(var(--text))];
   }
-  .text-desctructive {
+  .text-destructive {
     @apply text-[hsl(var(--destructive))];
+  }
+  .text-success {
+    @apply text-[hsl(var(--success))];
+  }
+  .text-warning {
+    @apply text-[hsl(var(--warning))];
   }
   .border-primary {
     @apply border-[hsl(var(--primary))];

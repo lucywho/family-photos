@@ -1,18 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardHeader,
-  CardDescription,
-  CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardDescription } from '@/components/ui/card';
 import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm';
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
-
   return (
     <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
       <div className='max-w-[400px] mx-auto'>
@@ -23,15 +14,6 @@ export default function ResetPasswordPage() {
             your password.
           </CardDescription>
           <ResetPasswordForm />
-          <CardFooter>
-            <Button
-              variant='secondary'
-              className='w-full mx-auto'
-              onClick={() => router.push('/')}
-            >
-              Cancel
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     </main>
