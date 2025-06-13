@@ -1,72 +1,128 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { CardFooter } from '@/components/ui/card';
 import { resetPassword } from '@/app/actions/auth';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const formSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export function ResetPasswordForm() {
-  const [email, setEmail] = useState('');
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  const formSuccess = form.formState.errors.root?.success;
+  const formFailure = form.formState.errors.root?.error;
+
+  const onSubmit = async (data: FormData) => {
+    form.clearErrors();
     setIsLoading(true);
-    setMessage(null);
 
     try {
-      await resetPassword(email);
-      setMessage({
+      await resetPassword(data.email);
+      form.setValue('email', '');
+      form.setError('root.success', {
         type: 'success',
-        text: 'If an account exists with this email, you will receive a password reset link shortly.',
+        message:
+          'If an account exists with this email, you will receive a password reset link shortly.',
       });
-      setEmail('');
     } catch (error) {
-      console.error('Error in ResetPasswordForm:', error);
-      setMessage({
+      console.error(`Error in ResetPasswordForm: ${error}`);
+      form.setError('root.error', {
         type: 'error',
-        text: 'An error occurred while sending the reset email. Please try again.',
+        message:
+          'An error occurred while sending the reset email. Please try again.',
       });
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Input
-              type='email'
-              placeholder='Enter your email address'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
-            />
+    <Form {...form}>
+      <form
+        data-testid='reset-password-form'
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='space-y-4'
+      >
+        {formSuccess && (
+          <div data-testid='reset-password-success' className='text-success'>
+            {formSuccess.message}
           </div>
-          {message && (
-            <div
-              className={`text-sm ${
-                message.type === 'success' ? 'text-green-500' : 'text-red-500'
-              }`}
-            >
-              {message.text}
-            </div>
+        )}
+        {formFailure && (
+          <div data-testid='reset-password-failure' className='text-warning'>
+            {formFailure.message}
+          </div>
+        )}
+
+        <FormField
+          control={form.control}
+          name='email'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='px-4'>Email</FormLabel>
+              <FormControl>
+                <div className='px-4'>
+                  <Input
+                    {...field}
+                    data-testid='email-input'
+                    type='email'
+                    placeholder='Enter your email address'
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </CardContent>
+        />
         <CardFooter>
-          <Button type='submit' className='w-full' disabled={isLoading}>
-            {isLoading ? 'Sending...' : 'Send Reset Link'}
-          </Button>
+          <div className='flex flex-col w-full'>
+            <Button
+              type='submit'
+              className='w-full'
+              disabled={isLoading}
+              data-testid='submit-reset-password'
+            >
+              {isLoading ? 'Sending...' : 'Send Reset Link'}
+            </Button>
+
+            <Button
+              variant='secondary'
+              className='w-full mx-auto'
+              data-testid='home-button'
+              onClick={() => router.push('/')}
+            >
+              {formSuccess ? 'Home' : 'Cancel'}
+            </Button>
+          </div>
         </CardFooter>
       </form>
-    </>
+    </Form>
   );
 }
