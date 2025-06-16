@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Home, LibraryBig, LogOut } from 'lucide-react';
@@ -11,6 +11,7 @@ import { useAlbum } from '@/contexts/AlbumContext';
 
 export function Header() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const username = session?.user?.name || 'Guest';
 
@@ -26,6 +27,7 @@ export function Header() {
   const showHomeButton = pathname !== '/';
   const showBackToAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
+  const albumId = searchParams.get('albumId');
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/' });
@@ -82,14 +84,14 @@ export function Header() {
               </Link>
             </Button>
           )}
-          {showBackToAlbumButton && (
+          {showBackToAlbumButton && albumId && (
             <Button
               variant='ghost'
               size='sm'
               asChild
               className='text-text hover:text-primary hover:bg-secondary'
             >
-              <Link href='/albums'>
+              <Link href={`/albums/${albumId}`}>
                 <LibraryBig className='h-4 w-4 md:mr-2' />
                 <span className='hidden md:inline'>Back to album</span>
               </Link>
