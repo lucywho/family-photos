@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AlbumProvider } from '@/contexts/AlbumContext';
 import { Header } from '@/components/layout/Header';
+import React from 'react';
 
 interface Album {
   id: number;
@@ -22,19 +23,20 @@ async function fetchAlbum(albumId: number): Promise<Album> {
   return response.json();
 }
 
-export default function AlbumLayout({
+// Client component that handles the album data
+function AlbumLayoutContent({
+  albumId,
   children,
-  params,
 }: {
+  albumId: string;
   children: React.ReactNode;
-  params: { albumId: string };
 }) {
-  const albumId = parseInt(params.albumId, 10);
   const [album, setAlbum] = useState<Album | null>(null);
 
   // Fetch album data when the component mounts
   useEffect(() => {
-    fetchAlbum(albumId)
+    const id = parseInt(albumId, 10);
+    fetchAlbum(id)
       .then((albumData) => {
         setAlbum(albumData);
       })
@@ -49,4 +51,16 @@ export default function AlbumLayout({
       {children}
     </AlbumProvider>
   );
+}
+
+// Server component that handles params
+export default function AlbumLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ albumId: string }>;
+}) {
+  const { albumId } = React.use(params);
+  return <AlbumLayoutContent albumId={albumId}>{children}</AlbumLayoutContent>;
 }
