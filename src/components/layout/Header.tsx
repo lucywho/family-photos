@@ -23,9 +23,6 @@ export function Header() {
     // Not in AlbumProvider context, which is fine
   }
 
-  console.log('Header - Current pathname:', pathname);
-  console.log('Header - Album data:', album);
-
   const showHomeButton = pathname !== '/';
   const showBackToAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
@@ -93,6 +90,7 @@ export function Header() {
               className='text-text hover:text-primary hover:bg-secondary'
             >
               <Link href='/albums'>
+                <LibraryBig className='h-4 w-4 md:mr-2' />
                 <span className='hidden md:inline'>Back to album</span>
               </Link>
             </Button>

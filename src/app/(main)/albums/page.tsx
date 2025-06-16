@@ -33,7 +33,6 @@ async function fetchAlbums(page: number): Promise<AlbumsResponse> {
     throw new Error('Failed to fetch albums');
   }
   const data = await response.json();
-  console.log('Albums API response:', data);
   return data;
 }
 

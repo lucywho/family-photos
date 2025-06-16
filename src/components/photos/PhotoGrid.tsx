@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageIcon } from 'lucide-react';
 
@@ -21,44 +21,43 @@ interface PhotoGridProps {
 }
 
 export function PhotoGrid({ photos }: PhotoGridProps) {
+  const pathname = usePathname();
+  const albumId = pathname.split('/')[2]; // Extract albumId from /albums/[albumId]
+
   return (
     <>
-      {photos.map((photo) => (
-        <PhotoCard key={photo.id} photo={photo} />
-      ))}
+      {photos.map((photo) => {
+        const photoUrl = `/photos/${
+          photo.id
+        }?albumId=${albumId}&photo=${encodeURIComponent(
+          JSON.stringify(photo)
+        )}`;
+
+        return (
+          <Link
+            key={photo.id}
+            href={photoUrl}
+            className='block transition-transform hover:scale-[1.02]'
+          >
+            <Card className='overflow-hidden'>
+              <CardContent className='p-0 aspect-[4/3] relative bg-muted'>
+                {photo.url ? (
+                  <img
+                    src={photo.url}
+                    alt={photo.title || 'Photo'}
+                    className='object-cover w-full h-full'
+                    loading='lazy'
+                  />
+                ) : (
+                  <div className='w-full h-full flex items-center justify-center'>
+                    <ImageIcon className='h-12 w-12 text-muted-foreground' />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </Link>
+        );
+      })}
     </>
-  );
-}
-
-function PhotoCard({ photo }: { photo: Photo }) {
-  const [imageError, setImageError] = useState(false);
-
-  return (
-    <Link href={`/photos/${photo.id}`}>
-      <Card className='h-full transition-colors hover:bg-accent'>
-        <CardContent className='p-4'>
-          <div className='aspect-square relative bg-muted rounded-lg overflow-hidden'>
-            {!imageError ? (
-              <img
-                src={photo.url}
-                alt={photo.title || 'Photo'}
-                className='object-cover w-full h-full'
-                onError={(e) => {
-                  console.error(
-                    `Failed to load image for photo ${photo.id}:`,
-                    e
-                  );
-                  setImageError(true);
-                }}
-              />
-            ) : (
-              <div className='w-full h-full flex items-center justify-center bg-muted'>
-                <ImageIcon className='h-12 w-12 text-muted-foreground' />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
   );
 }
