@@ -58,8 +58,6 @@ function GalleryView({ albumId }: { albumId: number }) {
   const [s3Error, setS3Error] = useState(false);
   const { ref, inView } = useInView();
 
-  console.log('GalleryView - Initial albumId:', albumId);
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
       queryKey: ['photos', albumId],
@@ -70,9 +68,6 @@ function GalleryView({ albumId }: { albumId: number }) {
         return pages.length + 1;
       },
     });
-
-  console.log('GalleryView - Query status:', status);
-  console.log('GalleryView - First page data:', data?.pages[0]);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -100,7 +95,6 @@ function GalleryView({ albumId }: { albumId: number }) {
   }
 
   const album = data?.pages[0]?.album ?? null;
-  console.log('GalleryView - Album data being provided:', album);
 
   return (
     <AlbumProvider album={album}>
