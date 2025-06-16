@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from './providers';
-import { HeaderWrapper } from '@/components/layout/HeaderWrapper';
+import { Providers } from '@/app/providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Family Photos',
-  description: 'View and manage your family photos',
+  description: 'A web app for sharing family photos',
   icons: {
     icon: '📷',
   },
@@ -22,10 +21,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <Providers>
-          <HeaderWrapper />
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
