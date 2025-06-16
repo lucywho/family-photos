@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ImageIcon } from 'lucide-react';
-import { AlbumGrid } from '@/components/albums/AlbumGrid';
-import { AlbumSkeleton } from '@/components/albums/AlbumSkeleton';
+import { useInView } from 'react-intersection-observer';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { useInView } from 'react-intersection-observer';
+import { AlbumGrid } from '@/components/albums/AlbumGrid';
+import { AlbumSkeleton } from '@/components/albums/AlbumSkeleton';
 import { ALBUMS_PER_PAGE } from '@/lib/constants';
 
 interface Album {
@@ -33,7 +32,9 @@ async function fetchAlbums(page: number): Promise<AlbumsResponse> {
   if (!response.ok) {
     throw new Error('Failed to fetch albums');
   }
-  return response.json();
+  const data = await response.json();
+  console.log('Albums API response:', data);
+  return data;
 }
 
 export default function AlbumsPage() {
@@ -94,13 +95,7 @@ export default function AlbumsPage() {
             ))
           : // Show albums
             data?.pages.map((page: AlbumsResponse, i: number) => (
-              <AlbumGrid
-                key={i}
-                albums={page.albums}
-                defaultIcon={
-                  <ImageIcon className='h-12 w-12 text-muted-foreground' />
-                }
-              />
+              <AlbumGrid key={i} albums={page.albums} />
             ))}
       </div>
 
