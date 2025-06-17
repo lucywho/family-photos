@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageIcon } from 'lucide-react';
+import { RefObject } from 'react';
 
 interface Photo {
   id: number;
@@ -18,9 +19,10 @@ interface Photo {
 
 interface PhotoGridProps {
   photos: Photo[];
+  photoRefs?: RefObject<Map<number, HTMLAnchorElement>>;
 }
 
-export function PhotoGrid({ photos }: PhotoGridProps) {
+export function PhotoGrid({ photos, photoRefs }: PhotoGridProps) {
   const pathname = usePathname();
   const albumId = pathname.split('/')[2]; // Extract albumId from /albums/[albumId]
 
@@ -31,13 +33,18 @@ export function PhotoGrid({ photos }: PhotoGridProps) {
           photo.id
         }?albumId=${albumId}&photo=${encodeURIComponent(
           JSON.stringify(photo)
-        )}`;
+        )}#photo-${photo.id}`;
 
         return (
           <Link
             key={photo.id}
             href={photoUrl}
             className='block transition-transform hover:scale-[1.02]'
+            ref={(el) => {
+              if (el && photoRefs?.current) {
+                photoRefs.current.set(photo.id, el);
+              }
+            }}
           >
             <Card className='overflow-hidden'>
               <CardContent className='p-0 aspect-[4/3] relative bg-muted'>
