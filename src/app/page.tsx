@@ -22,6 +22,7 @@ export default function WelcomePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRegisterExpanded, setIsRegisterExpanded] = useState(false);
 
   const handleGuestAccess = async () => {
     setIsLoading(true);
@@ -56,6 +57,10 @@ export default function WelcomePage() {
     }
   };
 
+  const toggleRegister = () => {
+    setIsRegisterExpanded(!isRegisterExpanded);
+  };
+
   return (
     <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
       <div className='max-w-[400px] lg:md:max-w-[1200px] mx-auto'>
@@ -65,9 +70,9 @@ export default function WelcomePage() {
           <h1 className='text-3xl font-bold mt-4'>{APP_NAME}</h1>
           <p className='text-secondary mt-2'>{APP_DESCRIPTION}</p>
         </section>
-        <section className='flex flex-col lg:flex-row lg:justify-between'>
-          {/* Login Section */}
-          <Card className='mb-4 max-h-[33vh] flex-1'>
+        <section className='grid grid-cols-1 lg:grid-cols-3 gap-4 lg:items-start'>
+          {/* Login Section - Order 1 on mobile, Order 2 on desktop */}
+          <Card className='mb-4 flex-1 order-1 lg:order-2'>
             <CardHeader>Login</CardHeader>
             <CardContent>
               <LoginForm />
@@ -80,19 +85,51 @@ export default function WelcomePage() {
             </CardFooter>
           </Card>
 
-          {/* Register Section */}
-          <Card className='mb-4 lg:mx-6 flex-1'>
-            <CardHeader>Create an Account</CardHeader>
-            <CardDescription className='my-4 px-6'>
-              Join the Family Photos app to view and manage family photos.
-            </CardDescription>
-            <RegistrationForm />
+          {/* Register Section - Order 2 on mobile, Order 1 on desktop */}
+          <Card className='mb-4 flex-1 overflow-hidden lg:min-h-[390px] order-2 lg:order-1'>
+            <div
+              className='cursor-pointer transition-all duration-300 ease-in-out'
+              onClick={toggleRegister}
+            >
+              <CardHeader>
+                <span>Create an Account</span>
+              </CardHeader>
+              <CardDescription className='px-6 pb-4 min-h-[60px]'>
+                Join the Family Photos app to view and manage family photos.
+              </CardDescription>
+              {!isRegisterExpanded && (
+                <div className='px-6 pb-4'>
+                  <Button
+                    variant='default'
+                    className='w-full'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleRegister();
+                    }}
+                  >
+                    Register now
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isRegisterExpanded
+                  ? 'max-h-[800px] opacity-100'
+                  : 'max-h-0 opacity-0'
+              }`}
+            >
+              <CardContent className='px-6 pt-0'>
+                <RegistrationForm />
+              </CardContent>
+            </div>
           </Card>
 
-          {/* Guest Section */}
-          <Card className='max-h-[33vh] p-4 flex-1'>
+          {/* Guest Section - Order 3 on mobile, Order 3 on desktop */}
+          <Card className='mb-4 flex-1 lg:min-h-[390px] order-3 lg:order-3'>
             <CardHeader>Continue as Guest</CardHeader>
-            <CardDescription>
+            <CardDescription className='min-h-[60px]'>
               View public photos without an account
             </CardDescription>
             {error && (
@@ -101,7 +138,7 @@ export default function WelcomePage() {
             <CardFooter>
               <Button
                 variant='default'
-                className='w-full'
+                className='w-full flex-1'
                 onClick={handleGuestAccess}
                 disabled={isLoading}
               >
