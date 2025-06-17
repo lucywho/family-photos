@@ -98,10 +98,11 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       try {
         const parsedPhoto = JSON.parse(decodeURIComponent(photoData));
         setPhoto(parsedPhoto);
-        // Remove photo data from URL without refreshing the page
+        // Remove photo data from URL without refreshing the page, but preserve the hash
+        const hash = window.location.hash;
         const newUrl = `/photos/${photoId}${
           sourceAlbumId ? `?albumId=${sourceAlbumId}` : ''
-        }`;
+        }${hash}`;
         window.history.replaceState({}, '', newUrl);
       } catch (error) {
         console.error('Failed to parse photo data:', error);
@@ -201,7 +202,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
                 )
               }
             >
-              Back to Album
+              Return to album
             </Button>
           </CardContent>
         </Card>

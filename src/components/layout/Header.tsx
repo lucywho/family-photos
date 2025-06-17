@@ -8,12 +8,14 @@ import { Button } from '@/components/ui/button';
 import { APP_NAME } from '@/lib/constants';
 import { Camera } from 'lucide-react';
 import { useAlbum } from '@/contexts/AlbumContext';
+import { useState, useEffect } from 'react';
 
 export function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const username = session?.user?.name || 'Guest';
+  const [photoHash, setPhotoHash] = useState('');
 
   // Try to get album data, but don't throw if not in AlbumProvider
   let album = null;
@@ -28,6 +30,18 @@ export function Header() {
   const showBackToAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
   const albumId = searchParams.get('albumId');
+
+  // Get the photo hash from the current URL to preserve scroll position
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash.startsWith('#photo-')) {
+        setPhotoHash(hash);
+      } else {
+        setPhotoHash('');
+      }
+    }
+  }, [pathname]);
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/' });
@@ -91,7 +105,7 @@ export function Header() {
               asChild
               className='text-text hover:text-primary hover:bg-secondary'
             >
-              <Link href={`/albums/${albumId}`}>
+              <Link href={`/albums/${albumId}${photoHash}`}>
                 <LibraryBig className='h-4 w-4 md:mr-2' />
                 <span className='hidden md:inline'>Back to album</span>
               </Link>
