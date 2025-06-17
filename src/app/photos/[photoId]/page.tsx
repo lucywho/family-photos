@@ -222,7 +222,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
             {/* Photo */}
-            <div className='relative w-full md:w-1/3 mx-auto aspect-[4/3] bg-muted rounded-lg overflow-hidden'>
+            <div className='relative w-full max-w-2xl mx-auto bg-muted rounded-lg overflow-hidden'>
               {isLoading && <PhotoSkeleton />}
               {!imageError ? (
                 <img
@@ -261,33 +261,46 @@ export default function PhotoPage({ params }: PhotoPageProps) {
               )}
             </div>
 
-            {/* Title */}
-            {photo.title && (
-              <h1 className='text-2xl font-semibold text-center'>
-                {photo.title}
-              </h1>
-            )}
+            <h1 className='text-2xl font-semibold text-center'>
+              {photo.title || 'untitled'}
+            </h1>
+            <p className='text-muted-foreground text-center'>
+              {' '}
+              <Badge variant='default'>{formattedDate || 'undated'}</Badge>
+            </p>
+            <p className='text-muted-foreground text-center'>
+              {photo.notes || 'no notes'}
+            </p>
+            <p className='w-full border border-secondary border-t-0 border-x-0 pb-4'></p>
 
-            {/* Notes */}
-            {photo.notes && (
-              <p className='text-muted-foreground text-center'>{photo.notes}</p>
-            )}
-
-            {/* Date, Tags, and Albums */}
-            <div className='flex flex-wrap gap-2 justify-center'>
-              {formattedDate && (
-                <Badge variant='secondary'>{formattedDate}</Badge>
+            <div className='flex flex-row items-center justify-around gap-4'>
+              {/* Tags section */}
+              {photo.tags && photo.tags.length > 0 ? (
+                <div className='flex flex-wrap flex-col gap-2 justify-center'>
+                  <p className='w-full text-center font-medium'>Tags:</p>
+                  {photo.tags.map((tag) => (
+                    <Badge key={tag} variant='outline'>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className='text-center text-sm text-secondary'>
+                  this photo has no tags
+                </p>
               )}
-              {(photo.tags || []).map((tag) => (
-                <Badge key={tag} variant='outline'>
-                  {tag}
-                </Badge>
-              ))}
-              {(photo.albums || []).map((album) => (
-                <Badge key={album.id} variant='secondary'>
-                  {album.name}
-                </Badge>
-              ))}
+
+              {/* Albums section */}
+              {photo.albums && photo.albums.length > 0 && (
+                <div className='flex flex-wrap flex-col gap-2 justify-center'>
+                  <p className='text-center text-sm text-secondary'>Albums:</p>
+                  {photo.albums.map((album) => (
+                    <Badge key={album.id} variant='secondary'>
+                      {album.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Edit button for admin */}
