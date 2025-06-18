@@ -4,53 +4,20 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ImageIcon, RefreshCw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
 import React from 'react';
 import { Header } from '@/components/layout/Header';
-
-interface Photo {
-  id: number;
-  url: string;
-  title: string | null;
-  date: string | null;
-  notes: string | null;
-  isFamilyOnly: boolean;
-  tags: string[];
-  albums: { id: number; name: string }[];
-}
-
-interface PhotoPageProps {
-  params: Promise<{ photoId: string }>;
-}
-
-function PhotoSkeleton() {
-  return (
-    <div className='container mx-auto p-4 space-y-4'>
-      <Skeleton className='w-full aspect-[4/3] md:w-1/3 mx-auto rounded-lg' />
-      <div className='space-y-2 max-w-2xl mx-auto'>
-        <Skeleton className='h-6 w-3/4 mx-auto' />
-        <Skeleton className='h-4 w-full' />
-        <Skeleton className='h-4 w-2/3' />
-        <div className='flex flex-wrap gap-2 justify-center'>
-          <Skeleton className='h-6 w-20 rounded-full' />
-          <Skeleton className='h-6 w-24 rounded-full' />
-          <Skeleton className='h-6 w-16 rounded-full' />
-        </div>
-      </div>
-    </div>
-  );
-}
+import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
+import { PhotoInfo } from '@/components/photos/PhotoInfo';
+import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
+import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
+import { Photo, PhotoPageProps } from '@/types/photo';
 
 export default function PhotoPage({ params }: PhotoPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +27,21 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   // Get the resolved params
   const { photoId } = React.use(params);
   const sourceAlbumId = searchParams.get('albumId');
+
+  // Use custom hook for navigation logic
+  const {
+    albumPhotos,
+    canNavigatePrevious,
+    canNavigateNext,
+    updatePhotoIndex,
+  } = usePhotoNavigation(sourceAlbumId);
+
+  // Update photo index when photo changes
+  useEffect(() => {
+    if (photo) {
+      updatePhotoIndex(photo.id);
+    }
+  }, [photo, updatePhotoIndex]);
 
   // Try to get photo data from URL first, fall back to API if not available
   useEffect(() => {
@@ -157,7 +139,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
 
     // If we've exceeded retry attempts, show error state
     if (retryCount >= MAX_RETRIES) {
-      setImageError(true);
       setIsLoading(false);
       return;
     }
@@ -172,19 +153,57 @@ export default function PhotoPage({ params }: PhotoPageProps) {
 
     setTimeout(() => {
       setRetryCount((prev) => prev + 1);
-      setImageError(false);
       setIsLoading(true);
     }, backoffDelay);
   };
 
   const handleRetry = () => {
     setRetryCount(0);
-    setImageError(false);
     setIsLoading(true);
   };
 
+  const handlePreviousPhoto = () => {
+    if (canNavigatePrevious && albumPhotos.length > 0) {
+      const currentIndex = albumPhotos.findIndex((p) => p.id === photo?.id);
+      if (currentIndex > 0) {
+        const previousPhoto = albumPhotos[currentIndex - 1];
+        navigateToPhoto(previousPhoto.id);
+      }
+    }
+  };
+
+  const handleNextPhoto = () => {
+    if (canNavigateNext && albumPhotos.length > 0) {
+      const currentIndex = albumPhotos.findIndex((p) => p.id === photo?.id);
+      if (currentIndex < albumPhotos.length - 1) {
+        const nextPhoto = albumPhotos[currentIndex + 1];
+        navigateToPhoto(nextPhoto.id);
+      }
+    }
+  };
+
+  const navigateToPhoto = (newPhotoId: number) => {
+    setIsLoading(true);
+    setRetryCount(0);
+
+    // Navigate to the new photo with hash to preserve scroll position
+    const newUrl = `/photos/${newPhotoId}${
+      sourceAlbumId ? `?albumId=${sourceAlbumId}` : ''
+    }#photo-${newPhotoId}`;
+    router.push(newUrl);
+  };
+
   if (isLoading) {
-    return <PhotoSkeleton />;
+    return (
+      <div className='container mx-auto p-4 space-y-4'>
+        <div className='w-full aspect-[4/3] md:w-1/3 mx-auto rounded-lg bg-muted animate-pulse' />
+        <div className='space-y-2 max-w-2xl mx-auto'>
+          <div className='h-6 w-3/4 mx-auto bg-muted animate-pulse rounded' />
+          <div className='h-4 w-full bg-muted animate-pulse rounded' />
+          <div className='h-4 w-2/3 bg-muted animate-pulse rounded' />
+        </div>
+      </div>
+    );
   }
 
   if (error || !photo) {
@@ -211,9 +230,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   }
 
   const isAdmin = session?.user?.role === 'ADMIN';
-  const formattedDate = photo.date
-    ? format(new Date(photo.date), 'dd/MM/yyyy')
-    : null;
 
   return (
     <>
@@ -221,96 +237,32 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       <div className='container mx-auto p-4'>
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
-            {/* Photo */}
-            <div className='relative w-full max-w-2xl mx-auto bg-muted rounded-lg overflow-hidden'>
-              {isLoading && <PhotoSkeleton />}
-              {!imageError ? (
-                <img
-                  src={photo.url}
-                  alt={photo.title || 'Photo'}
-                  className={`object-cover w-full h-full ${
-                    isLoading ? 'opacity-0' : 'opacity-100'
-                  } transition-opacity duration-300`}
-                  onLoad={() => {
-                    setIsLoading(false);
-                    setImageError(false);
-                    setRetryCount(0);
-                  }}
-                  onError={handleImageError}
-                  loading='lazy'
-                  key={`photo-${photo.id}-retry-${retryCount}`}
-                />
-              ) : (
-                <div className='w-full h-full flex flex-col items-center justify-center bg-muted gap-4'>
-                  <ImageIcon className='h-12 w-12 text-muted-foreground' />
-                  <p className='text-sm text-muted-foreground text-center px-4'>
-                    {retryCount >= MAX_RETRIES
-                      ? 'Sorry, your photos are currently unavailable'
-                      : 'Unable to load image'}
-                  </p>
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    onClick={handleRetry}
-                    className='flex items-center gap-2'
-                  >
-                    <RefreshCw className='h-4 w-4' />
-                    Try Again
-                  </Button>
-                </div>
-              )}
+            {/* Photo Display */}
+            <PhotoDisplay
+              photo={photo}
+              isLoading={isLoading}
+              onLoad={() => {
+                setIsLoading(false);
+                setRetryCount(0);
+              }}
+              onError={handleImageError}
+              retryCount={retryCount}
+              onRetry={handleRetry}
+            />
+
+            {/* Photo Information Section with Navigation */}
+            <div className='relative'>
+              {/* Navigation Buttons */}
+              <PhotoNavigation
+                canNavigatePrevious={canNavigatePrevious}
+                canNavigateNext={canNavigateNext}
+                onPrevious={handlePreviousPhoto}
+                onNext={handleNextPhoto}
+              />
+
+              {/* Photo Information Content */}
+              <PhotoInfo photo={photo} isAdmin={isAdmin} />
             </div>
-
-            <h1 className='text-2xl font-semibold text-center'>
-              {photo.title || 'untitled'}
-            </h1>
-            <p className='text-muted-foreground text-center'>
-              {' '}
-              <Badge variant='default'>{formattedDate || 'undated'}</Badge>
-            </p>
-            <p className='text-muted-foreground text-center'>
-              {photo.notes || 'no notes'}
-            </p>
-            <p className='w-full border border-secondary border-t-0 border-x-0 pb-4'></p>
-
-            <div className='flex flex-row items-center justify-around gap-4'>
-              {/* Tags section */}
-              {photo.tags && photo.tags.length > 0 ? (
-                <div className='flex flex-wrap flex-col gap-2 justify-center'>
-                  <p className='w-full text-center font-medium'>Tags:</p>
-                  {photo.tags.map((tag) => (
-                    <Badge key={tag} variant='outline'>
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              ) : (
-                <p className='text-center text-sm text-secondary'>
-                  this photo has no tags
-                </p>
-              )}
-
-              {/* Albums section */}
-              {photo.albums && photo.albums.length > 0 && (
-                <div className='flex flex-wrap flex-col gap-2 justify-center'>
-                  <p className='text-center text-sm text-secondary'>Albums:</p>
-                  {photo.albums.map((album) => (
-                    <Badge key={album.id} variant='secondary'>
-                      {album.name}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Edit button for admin */}
-            {isAdmin && (
-              <div className='flex justify-center pt-4'>
-                <Button variant='secondary' asChild>
-                  <a href={`/photos/${photo.id}/edit`}>Edit</a>
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>
