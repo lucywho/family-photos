@@ -62,6 +62,15 @@ export function PhotoEditForm({
   const [tags, setTags] = useState<string[]>(photo.tags || []);
   const [tagInput, setTagInput] = useState('');
   const [tagError, setTagError] = useState<string | null>(null);
+  // Default _allAlbums to empty array if undefined
+  const allAlbumsSafe = Array.isArray(_allAlbums) ? _allAlbums : [];
+  const [albums, setAlbums] = useState<{ id: number; name: string }[]>(
+    photo.albums && photo.albums.length > 0
+      ? photo.albums
+      : allAlbumsSafe.filter((a) => a.name === 'All Photos')
+  );
+  const [albumInput, setAlbumInput] = useState('');
+  const [albumError, setAlbumError] = useState<string | null>(null);
 
   // Helper to format ISO date to dd/mm/yyyy
   function formatDate(iso: string) {
@@ -153,6 +162,50 @@ export function PhotoEditForm({
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAddTag();
+    }
+  };
+
+  // Add album handler
+  const handleAddAlbum = () => {
+    const newAlbum = albumInput.trim();
+    if (!newAlbum) return;
+    if (newAlbum.length > 20) {
+      setAlbumError('Album name must be 20 characters or less');
+      return;
+    }
+    if (albums.some((a) => a.name.toLowerCase() === newAlbum.toLowerCase())) {
+      setAlbumError('Album already selected');
+      return;
+    }
+    // Always add as a new album (id: 0 for new, will be created on save)
+    setAlbums([...albums, { id: 0, name: newAlbum }]);
+    setAlbumInput('');
+    setAlbumError(null);
+  };
+
+  // Remove album handler (cannot remove All Photos)
+  const handleRemoveAlbum = (album: { id: number; name: string }) => {
+    if (album.name === 'All Photos') return;
+    setAlbums(albums.filter((a) => a.name !== album.name));
+  };
+
+  // Select existing album
+  const handleSelectAlbum = (album: { id: number; name: string }) => {
+    if (albums.some((a) => a.name === album.name)) {
+      setAlbumError('Album already selected');
+      return;
+    }
+    setAlbums([...albums, album]);
+    setAlbumError(null);
+  };
+
+  // Handle album input Enter key
+  const handleAlbumInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddAlbum();
     }
   };
 
@@ -377,6 +430,83 @@ export function PhotoEditForm({
                 ))
             ) : (
               <span className='text-muted-foreground text-xs'>No tags yet</span>
+            )}
+          </div>
+        </div>
+        {/* Albums section */}
+        <div>
+          <label className='block font-medium mb-1'>Albums</label>
+          <div className='flex flex-wrap gap-2 mb-2'>
+            {albums.length > 0 ? (
+              albums.map((album) => (
+                <span
+                  key={album.name}
+                  className='inline-flex items-center bg-primary text-secondary px-2 py-1 rounded text-xs'
+                >
+                  {album.name}
+                  {album.name !== 'All Photos' && (
+                    <button
+                      type='button'
+                      className='ml-1 hover:underline'
+                      onClick={() => handleRemoveAlbum(album)}
+                      aria-label={`Remove album ${album.name}`}
+                    >
+                      <X size={16} className='text-destructive' />
+                    </button>
+                  )}
+                </span>
+              ))
+            ) : (
+              <span className='text-muted-foreground text-xs'>
+                No albums selected
+              </span>
+            )}
+          </div>
+          <div className='flex gap-2 mb-2'>
+            <input
+              type='text'
+              value={albumInput}
+              onChange={(e) => {
+                setAlbumInput(e.target.value);
+                setAlbumError(null);
+              }}
+              onKeyDown={handleAlbumInputKeyDown}
+              maxLength={20}
+              placeholder='Add or select an album'
+              className='border rounded px-2 py-1'
+              disabled={pending}
+              aria-label='Add album'
+            />
+            <Button
+              type='button'
+              variant='secondary'
+              size='sm'
+              onClick={handleAddAlbum}
+              disabled={pending || !albumInput.trim()}
+            >
+              Add
+            </Button>
+          </div>
+          {albumError && (
+            <div className='text-destructive text-xs mb-1'>{albumError}</div>
+          )}
+          <div className='flex flex-wrap gap-2'>
+            {allAlbumsSafe.length > 0 ? (
+              allAlbumsSafe
+                .filter((album) => !albums.some((a) => a.name === album.name))
+                .map((album) => (
+                  <button
+                    key={album.id}
+                    type='button'
+                    className='bg-secondary text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white'
+                    onClick={() => handleSelectAlbum(album)}
+                    disabled={pending}
+                  >
+                    {album.name}
+                  </button>
+                ))
+            ) : (
+              <span className='text-muted-foreground text-xs'></span>
             )}
           </div>
         </div>
