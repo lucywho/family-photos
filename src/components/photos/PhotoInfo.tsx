@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 interface PhotoInfoProps {
   photo: Photo;
   isAdmin: boolean;
+  onEdit?: () => void;
 }
 
-export function PhotoInfo({ photo, isAdmin }: PhotoInfoProps) {
+export function PhotoInfo({ photo, isAdmin, onEdit }: PhotoInfoProps) {
   const formattedDate = photo.date
     ? format(new Date(photo.date), 'dd/MM/yyyy')
     : null;
@@ -61,8 +62,8 @@ export function PhotoInfo({ photo, isAdmin }: PhotoInfoProps) {
       {/* Edit button for admin */}
       {isAdmin && (
         <div className='flex justify-center pt-4'>
-          <Button variant='secondary' asChild>
-            <a href={`/photos/${photo.id}/edit`}>Edit</a>
+          <Button variant='secondary' onClick={onEdit}>
+            Edit
           </Button>
         </div>
       )}

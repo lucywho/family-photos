@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { MAX_RETRIES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
+import { PhotoEditForm } from './PhotoEditForm';
 import { Header } from '@/components/layout/Header';
 import { Photo, PhotoPageProps } from '@/types/photo';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,7 +24,9 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
+  const [isEditing, setIsEditing] = useState(false);
+  const [allTags, setAllTags] = useState([]);
+  const [allAlbums, setAllAlbums] = useState([]);
 
   // Get the resolved params
   const { photoId } = React.use(params);
@@ -192,6 +197,25 @@ export default function PhotoPage({ params }: PhotoPageProps) {
     router.push(newUrl);
   };
 
+  const handleEditClick = async () => {
+    // Fetch tags and albums only when entering edit mode
+    const [tags, albums] = await Promise.all([
+      fetch('/api/tags').then((res) => res.json()),
+      fetch('/api/albums').then((res) => res.json()),
+    ]);
+    if (tags) {
+      setAllTags(tags);
+    }
+    setAllAlbums(albums);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => setIsEditing(false);
+  const handleSaveEdit = (updatedPhoto: Photo) => {
+    setPhoto(updatedPhoto);
+    setIsEditing(false);
+  };
+
   if (isLoading) {
     return (
       <div className='container mx-auto p-4 space-y-4'>
@@ -236,7 +260,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       <div className='container mx-auto p-4'>
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
-            {/* Photo Display */}
             <PhotoDisplay
               photo={photo}
               isLoading={isLoading}
@@ -248,19 +271,28 @@ export default function PhotoPage({ params }: PhotoPageProps) {
               retryCount={retryCount}
               onRetry={handleRetry}
             />
-
-            {/* Photo Information Section with Navigation */}
             <div className='relative'>
-              {/* Navigation Buttons */}
               <PhotoNavigation
                 canNavigatePrevious={canNavigatePrevious}
                 canNavigateNext={canNavigateNext}
                 onPrevious={handlePreviousPhoto}
                 onNext={handleNextPhoto}
               />
-
-              {/* Photo Information Content */}
-              <PhotoInfo photo={photo} isAdmin={isAdmin} />
+              {isEditing ? (
+                <PhotoEditForm
+                  photo={photo}
+                  /* allTags={allTags}
+                  allAlbums={allAlbums} */
+                  onCancel={handleCancelEdit}
+                  onSave={handleSaveEdit}
+                />
+              ) : (
+                <PhotoInfo
+                  photo={photo}
+                  isAdmin={isAdmin}
+                  onEdit={handleEditClick}
+                />
+              )}
             </div>
           </CardContent>
         </Card>
