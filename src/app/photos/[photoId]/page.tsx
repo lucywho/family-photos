@@ -201,7 +201,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
     // Fetch tags and albums only when entering edit mode
     const [tags, albums] = await Promise.all([
       fetch('/api/tags').then((res) => res.json()),
-      fetch('/api/albums').then((res) => res.json()),
+      fetch('/api/albums/all').then((res) => res.json()),
     ]);
     if (tags) {
       setAllTags(tags);
