@@ -1,18 +1,17 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import React from 'react';
 import { Header } from '@/components/layout/Header';
-import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
-import { PhotoInfo } from '@/components/photos/PhotoInfo';
-import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
-import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
 import { Photo, PhotoPageProps } from '@/types/photo';
+import { Card, CardContent } from '@/components/ui/card';
+import { PhotoInfo } from '@/components/photos/PhotoInfo';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
+import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
+import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
 
 export default function PhotoPage({ params }: PhotoPageProps) {
   const { data: session } = useSession();
