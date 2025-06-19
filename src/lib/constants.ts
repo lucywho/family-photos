@@ -23,3 +23,6 @@ export const ITEMS_PER_PAGE = 12;
 
 // Album page
 export const ALBUMS_PER_PAGE = 12;
+
+// Photo page, limits number of times the app tries to load a failing image
+export const MAX_RETRIES = 3;
