@@ -1,17 +1,20 @@
 import { z } from 'zod';
 import { isValid, parse } from 'date-fns';
+import { MAX_TITLE_LENGTH, MAX_TAGS, MAX_NOTES_LENGTH } from '../constants';
 
 // Custom date validation for dd/mm/yyyy format
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
 
 const dateStringSchema = z
   .string()
-  .regex(dateRegex, 'Date must be in dd/mm/yyyy format')
-  .refine((date) => {
-    if (!date) return true;
-    const parsed = parse(date, 'dd/MM/yyyy', new Date());
-    return isValid(parsed);
-  }, 'Invalid date');
+  .optional()
+  .transform((val) => (val === '' ? undefined : val))
+  .refine((val) => !val || dateRegex.test(val), {
+    message: 'Date must be in dd/mm/yyyy format',
+  })
+  .refine((val) => !val || isValid(parse(val, 'dd/MM/yyyy', new Date())), {
+    message: 'Invalid date',
+  });
 
 // Tag and Album name validation
 const nameSchema = z.string().max(20, 'Maximum length is 20 characters').trim();
@@ -20,14 +23,20 @@ const nameSchema = z.string().max(20, 'Maximum length is 20 characters').trim();
 export const photoEditSchema = z.object({
   title: z
     .string()
-    .max(70, 'Title must be 70 characters or less')
+    .max(
+      MAX_TITLE_LENGTH,
+      `Title must be ${MAX_TITLE_LENGTH} characters or less`
+    )
     .trim()
     .optional()
     .transform((val) => val || null),
 
   notes: z
     .string()
-    .max(1000, 'Notes must be 1000 characters or less')
+    .max(
+      MAX_NOTES_LENGTH,
+      `Notes must be ${MAX_NOTES_LENGTH} characters or less`
+    )
     .trim()
     .optional()
     .transform((val) => val || null),
@@ -41,7 +50,7 @@ export const photoEditSchema = z.object({
 
   tags: z
     .array(nameSchema)
-    .max(50, 'Too many tags') // Reasonable limit for tags
+    .max(MAX_TAGS, 'Too many tags') // Reasonable limit for tags
     .transform((tags) => [...new Set(tags)]), // Remove duplicates
 
   albums: z
