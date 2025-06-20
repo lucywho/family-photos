@@ -115,6 +115,7 @@ export function LoginForm() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder='Enter your password'
                     disabled={isLoggingIn}
+                    className='focus:bg-secondary focus:text-background'
                   />
                   <button
                     type='button'

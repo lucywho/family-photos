@@ -1,15 +1,18 @@
 'use client';
-import { useFormStatus } from 'react-dom';
+
+import isEqual from 'lodash.isequal';
 import { Button } from '@/components/ui/button';
+import { updatePhoto } from '@/app/actions/photos';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
+import { DateInput } from '@/components/edit/DateInput';
 import { TitleInput } from '@/components/edit/TitleInput';
 import { NotesInput } from '@/components/edit/NotesInput';
-import { DateInput } from '@/components/edit/DateInput';
-import { FamilyOnlyCheckbox } from '@/components/edit/FamilyOnlyCheckbox';
+import { useState, useEffect, useActionState } from 'react';
+import type { PhotoEditResponse } from '@/lib/schemas/photo';
 import { TagsSelector } from '@/components/edit/TagsSelector';
 import { AlbumsSelector } from '@/components/edit/AlbumsSelector';
-// import { X } from 'lucide-react'; // No longer needed
+import { MAX_TAG_LENGTH, MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
+import { FamilyOnlyCheckbox } from '@/components/edit/FamilyOnlyCheckbox';
 // import { updatePhoto } from '@/app/actions/photos'; // Uncomment when server action is ready
 
 interface Photo {
@@ -45,35 +48,28 @@ interface PhotoEditFormProps {
   onSave: (updatedPhoto: Photo) => void;
 }
 
+const initialFormState: PhotoEditResponse = {
+  success: false,
+  message: '',
+  data: undefined,
+  errors: {},
+};
+
 export function PhotoEditForm({
   photo,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allTags: _allTags, // will be used in Stage 5
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allAlbums: _allAlbums, // will be used in Stage 6
+  allTags: _allTags,
+  allAlbums: _allAlbums,
   onCancel,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onSave: _onSave, // will be used in Stage 7
+  onSave,
 }: PhotoEditFormProps) {
-  // Placeholder server action and optimistic state
-  // const [formState, formAction] = useActionState(updatePhoto, initialState);
-  const { pending } = useFormStatus();
-  // Title
   const [title, setTitle] = useState(photo.title || '');
-  const [titleError, setTitleError] = useState<string | null>(null);
-  // Notes
   const [notes, setNotes] = useState(photo.notes || '');
-  const [notesError, setNotesError] = useState<string | null>(null);
-  // Date
   const [date, setDate] = useState(photo.date ? formatDate(photo.date) : '');
-  const [dateError, setDateError] = useState<string | null>(null);
-  // Family only
+  const [dateClientError, setDateClientError] = useState<string | null>(null);
   const [familyOnly, setFamilyOnly] = useState(!!photo.isFamilyOnly);
-  // Tags
   const [tags, setTags] = useState<string[]>(photo.tags || []);
   const [tagInput, setTagInput] = useState('');
-  const [tagError, setTagError] = useState<string | null>(null);
-  // Albums
+  const [tagClientError, setTagClientError] = useState<string | null>(null);
   const allAlbumsSafe = Array.isArray(_allAlbums) ? _allAlbums : [];
   const [albums, setAlbums] = useState<{ id: number; name: string }[]>(
     photo.albums && photo.albums.length > 0
@@ -81,7 +77,7 @@ export function PhotoEditForm({
       : allAlbumsSafe.filter((a) => a.name === 'All Photos')
   );
   const [albumInput, setAlbumInput] = useState('');
-  const [albumError, setAlbumError] = useState<string | null>(null);
+  const [albumClientError, setAlbumClientError] = useState<string | null>(null);
 
   // Helper to format ISO date to dd/mm/yyyy
   function formatDate(iso: string) {
@@ -93,71 +89,33 @@ export function PhotoEditForm({
     return `${day}/${month}/${year}`;
   }
 
-  // Title validation
-  const handleTitleChange = (value: string) => {
-    setTitle(value);
-    if (value.length > 70) {
-      setTitleError('Title must be 70 characters or less');
-    } else {
-      setTitleError(null);
-    }
-  };
-
-  // Notes validation
-  const handleNotesChange = (value: string) => {
-    setNotes(value);
-    if (value.length > 1000) {
-      setNotesError('Notes must be 1000 characters or less');
-    } else {
-      setNotesError(null);
-    }
-  };
-
-  // Date validation (dd/mm/yyyy)
-  const handleDateChange = (value: string) => {
-    setDate(value);
-    if (value && !/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-      setDateError('Date must be in dd/mm/yyyy format');
-    } else {
-      setDateError(null);
-    }
-  };
-  const handleClearDate = () => {
-    setDate('');
-    setDateError(null);
-  };
-
-  // Family only toggle
-  const handleFamilyOnlyChange = (checked: boolean) => {
-    setFamilyOnly(checked);
-  };
-
   // Tags logic
   const handleAddTag = () => {
     const newTag = tagInput.trim();
     if (!newTag) return;
-    if (newTag.length > 20) {
-      setTagError('Tag must be 20 characters or less');
+    if (newTag.length > MAX_TAG_LENGTH) {
+      setTagClientError(`Tag must be ${MAX_TAG_LENGTH} characters or less`);
       return;
     }
-    if (tags.includes(newTag)) {
-      setTagError('Tag already selected');
+    if (tags.some((t) => t.toLowerCase() === newTag.toLowerCase())) {
+      setTagClientError('Tag already selected');
       return;
     }
     setTags([...tags, newTag]);
     setTagInput('');
-    setTagError(null);
+    setTagClientError(null);
   };
   const handleRemoveTag = (tag: string) => {
     setTags(tags.filter((t) => t !== tag));
+    setTagClientError(null);
   };
   const handleSelectTag = (tag: string) => {
-    if (tags.includes(tag)) {
-      setTagError('Tag already selected');
+    if (tags.some((t) => t.toLowerCase() === tag.toLowerCase())) {
+      setTagClientError('Tag already selected');
       return;
     }
     setTags([...tags, tag]);
-    setTagError(null);
+    setTagClientError(null);
   };
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -166,33 +124,40 @@ export function PhotoEditForm({
     }
   };
 
+  useEffect(() => {
+    setTagClientError(null);
+  }, [tagInput]);
+
   // Albums logic
   const handleAddAlbum = () => {
     const newAlbum = albumInput.trim();
     if (!newAlbum) return;
-    if (newAlbum.length > 20) {
-      setAlbumError('Album name must be 20 characters or less');
+    if (newAlbum.length > MAX_ALBUM_NAME_LENGTH) {
+      setAlbumClientError(
+        `Album name must be ${MAX_ALBUM_NAME_LENGTH} characters or less`
+      );
       return;
     }
     if (albums.some((a) => a.name.toLowerCase() === newAlbum.toLowerCase())) {
-      setAlbumError('Album already selected');
+      setAlbumClientError('Album already selected');
       return;
     }
     setAlbums([...albums, { id: 0, name: newAlbum }]);
     setAlbumInput('');
-    setAlbumError(null);
+    setAlbumClientError(null);
   };
   const handleRemoveAlbum = (album: { id: number; name: string }) => {
     if (album.name === 'All Photos') return;
     setAlbums(albums.filter((a) => a.name !== album.name));
+    setAlbumClientError(null);
   };
   const handleSelectAlbum = (album: { id: number; name: string }) => {
-    if (albums.some((a) => a.name === album.name)) {
-      setAlbumError('Album already selected');
+    if (albums.some((a) => a.name.toLowerCase() === album.name.toLowerCase())) {
+      setAlbumClientError('Album already selected');
       return;
     }
     setAlbums([...albums, album]);
-    setAlbumError(null);
+    setAlbumClientError(null);
   };
   const handleAlbumInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
@@ -203,8 +168,56 @@ export function PhotoEditForm({
     }
   };
 
-  // Error boundary wrapper
-  if (pending) {
+  useEffect(() => {
+    setAlbumClientError(null);
+  }, [albumInput]);
+
+  const handleDateChange = (value: string) => {
+    setDate(value);
+    if (value && !/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+      setDateClientError('Date must be in dd/mm/yyyy format');
+    } else {
+      setDateClientError(null);
+    }
+  };
+
+  const handleClearDate = () => {
+    setDate('');
+    setDateClientError(null);
+  };
+
+  const [formState, formAction, isPending] = useActionState(
+    async (_state: PhotoEditResponse, formData: FormData) => {
+      formData.set('title', title);
+      formData.set('notes', notes);
+      formData.set('date', date);
+      formData.set('familyOnly', familyOnly ? 'true' : 'false');
+      formData.delete('tags');
+      tags.forEach((tag) => formData.append('tags', tag));
+      formData.set('albums', JSON.stringify(albums));
+      const result = await updatePhoto(photo.id, formData);
+      return result;
+    },
+    initialFormState
+  );
+
+  useEffect(() => {
+    if (formState.success && formState.data) {
+      onSave({
+        ...photo,
+        ...formState.data,
+        albums: (formState.data.albums || []).map(
+          (a: { id?: number; name: string }) => ({
+            id: a.id ?? 0,
+            name: a.name,
+          })
+        ),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState.success]);
+
+  if (isPending) {
     return (
       <div className='flex flex-col md:flex-row gap-8'>
         <Skeleton className='w-full md:w-1/2 aspect-[4/3] rounded-lg' />
@@ -217,59 +230,88 @@ export function PhotoEditForm({
     );
   }
 
+  const fieldErrors = formState.errors || {};
+
+  function getFormDataObj() {
+    return {
+      title,
+      notes,
+      date,
+      familyOnly,
+      tags: tags.map((t) => t.trim().toLowerCase()).sort(),
+      albums: albums.map((a) => a.name.trim().toLowerCase()).sort(),
+    };
+  }
+
+  function getInitialFormDataObj() {
+    return {
+      title: photo.title || '',
+      notes: photo.notes || '',
+      date: photo.date ? formatDate(photo.date) : '',
+      familyOnly: !!photo.isFamilyOnly,
+      tags: (photo.tags || []).map((t) => t.trim().toLowerCase()).sort(),
+      albums: (photo.albums || [])
+        .map((a) => a.name.trim().toLowerCase())
+        .sort(),
+    };
+  }
+
+  const noChanges = isEqual(getFormDataObj(), getInitialFormDataObj());
+
   const isDisabled = () => {
-    if (
-      pending ||
-      !!titleError ||
-      !!notesError ||
-      !!dateError ||
-      (!title && !date && !notes)
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    return (
+      isPending ||
+      !!dateClientError ||
+      !!tagClientError ||
+      !!albumClientError ||
+      noChanges
+    );
   };
 
   return (
-    <form className='flex flex-col md:flex-row gap-8 mx-16'>
+    <form className='flex flex-col md:flex-row gap-8 mx-16' action={formAction}>
       <div className='flex-1 space-y-4'>
         <h2 className='text-xl font-bold mb-2 text-center'>
           Edit: {photo.title || 'untitled'}
         </h2>
+        {formState.message && !formState.success && (
+          <div className='text-destructive text-center'>
+            {formState.message}
+          </div>
+        )}
         <TitleInput
           value={title}
-          error={titleError}
-          onChange={handleTitleChange}
-          disabled={pending}
+          error={fieldErrors.title?.join(' ')}
+          onChange={setTitle}
+          disabled={isPending}
           placeholder={photo.title || 'Title'}
         />
         <NotesInput
           value={notes}
-          error={notesError}
-          onChange={handleNotesChange}
-          disabled={pending}
+          error={fieldErrors.notes?.join(' ')}
+          onChange={setNotes}
+          disabled={isPending}
           placeholder={photo.notes || 'Notes'}
         />
         <DateInput
           value={date}
-          error={dateError}
+          error={dateClientError || fieldErrors.date?.join(' ')}
           onChange={handleDateChange}
           onClear={handleClearDate}
-          disabled={pending}
+          disabled={isPending}
           placeholder={photo.date ? formatDate(photo.date) : 'dd/mm/yyyy'}
         />
         <FamilyOnlyCheckbox
           value={familyOnly}
-          onChange={handleFamilyOnlyChange}
-          disabled={pending}
+          onChange={setFamilyOnly}
+          disabled={isPending}
         />
         <TagsSelector
           tags={tags}
           allTags={_allTags}
           inputValue={tagInput}
-          error={tagError}
-          pending={pending}
+          error={tagClientError || fieldErrors.tags?.join(' ')}
+          pending={isPending}
           onInputChange={setTagInput}
           onAdd={handleAddTag}
           onRemove={handleRemoveTag}
@@ -280,8 +322,8 @@ export function PhotoEditForm({
           albums={albums}
           allAlbums={allAlbumsSafe}
           inputValue={albumInput}
-          error={albumError}
-          pending={pending}
+          error={albumClientError || fieldErrors.albums?.join(' ')}
+          pending={isPending}
           onInputChange={setAlbumInput}
           onAdd={handleAddAlbum}
           onRemove={handleRemoveAlbum}
@@ -293,7 +335,7 @@ export function PhotoEditForm({
             type='button'
             variant='secondary'
             onClick={onCancel}
-            disabled={pending}
+            disabled={isPending}
           >
             Cancel
           </Button>
