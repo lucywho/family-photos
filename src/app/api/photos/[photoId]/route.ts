@@ -50,6 +50,9 @@ export async function GET(
             name: true,
           },
         },
+        tags: {
+          select: { name: true },
+        },
       },
     });
 

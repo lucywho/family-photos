@@ -22,7 +22,7 @@ interface Photo {
   date: string | null;
   notes: string | null;
   isFamilyOnly: boolean;
-  tags?: string[];
+  tags: string[];
   albums: { id: number; name: string }[];
 }
 
