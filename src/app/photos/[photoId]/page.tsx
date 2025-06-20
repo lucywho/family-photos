@@ -71,7 +71,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
         }
 
         const data = await response.json();
-        setPhoto(data);
+        setPhoto(normalizePhoto(data));
       } catch (error) {
         console.error('Error fetching photo:', error);
         setError('Failed to load photo');
@@ -83,7 +83,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
     if (photoData) {
       try {
         const parsedPhoto = JSON.parse(decodeURIComponent(photoData));
-        setPhoto(parsedPhoto);
+        setPhoto(normalizePhoto(parsedPhoto));
         // Remove photo data from URL without refreshing the page, but preserve the hash
         const hash = window.location.hash;
         const newUrl = `/photos/${photoId}${
@@ -216,25 +216,34 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       const response = await fetch(`/api/photos/${updatedPhoto.id}`);
       if (response.ok) {
         const freshPhoto = await response.json();
-        setPhoto({
-          ...freshPhoto,
-          tags: freshPhoto.tags ?? [],
-        });
+        setPhoto(normalizePhoto(freshPhoto));
       } else {
-        // fallback to optimistic update if fetch fails
-        setPhoto({
-          ...updatedPhoto,
-          tags: updatedPhoto.tags ?? [],
-        });
+        setPhoto(normalizePhoto(updatedPhoto));
       }
     } catch (err) {
-      setPhoto({
-        ...updatedPhoto,
-        tags: updatedPhoto.tags ?? [],
-      });
+      setPhoto(normalizePhoto(updatedPhoto));
     }
     setIsEditing(false);
   };
+
+  // Helper to normalize photo object
+  function normalizePhoto(photo: unknown): Photo {
+    const p = photo as Partial<Photo> & {
+      tags?: unknown[];
+      albums?: unknown[];
+    };
+    return {
+      ...p,
+      tags: (p.tags ?? []).map((t) =>
+        typeof t === 'string' ? t : (t as { name: string }).name
+      ),
+      albums: (p.albums ?? []).map((a) =>
+        typeof a === 'object' && a !== null
+          ? { id: (a as { id: number }).id, name: (a as { name: string }).name }
+          : (a as { id: number; name: string })
+      ),
+    } as Photo;
+  }
 
   if (isLoading) {
     return (
@@ -301,8 +310,8 @@ export default function PhotoPage({ params }: PhotoPageProps) {
               {isEditing ? (
                 <PhotoEditForm
                   photo={photo}
-                  /* allTags={allTags}
-                  allAlbums={allAlbums} */
+                  allTags={allTags}
+                  allAlbums={allAlbums}
                   onCancel={handleCancelEdit}
                   onSave={handleSaveEdit}
                 />
