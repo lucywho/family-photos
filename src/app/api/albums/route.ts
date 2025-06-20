@@ -71,6 +71,7 @@ export async function GET(request: Request) {
           },
         },
         photos: {
+          where: { isFamilyOnly: false },
           take: 1,
           orderBy: [
             {
