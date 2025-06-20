@@ -1,5 +1,6 @@
 'use server';
 
+import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { photoEditSchema, type PhotoEditResponse } from '@/lib/schemas/photo';
@@ -21,9 +22,59 @@ export async function updatePhoto(
 
     const validatedData = photoEditSchema.parse(rawData);
 
-    // TODO: Implement database update
-    // This is a placeholder that will be implemented in later stages
-    console.log('Updating photo:', photoId, validatedData);
+    // --- TAGS ---
+    // Find or create tags, get their IDs
+    const tagRecords = await Promise.all(
+      (validatedData.tags || []).map(async (tagName: string) => {
+        return prisma.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: { name: tagName },
+        });
+      })
+    );
+
+    // --- ALBUMS ---
+    // Always include "All Photos" album
+    const albumNames = [
+      ...new Set([
+        ...(validatedData.albums || []).map((a) => a.name),
+        'All Photos',
+      ]),
+    ];
+
+    const albumRecords = await Promise.all(
+      albumNames.map(async (albumName) => {
+        return prisma.album.upsert({
+          where: { name: albumName },
+          update: {},
+          create: { name: albumName },
+        });
+      })
+    );
+
+    // --- UPDATE PHOTO ---
+    const updatedPhoto = await prisma.photo.update({
+      where: { id: photoId },
+      data: {
+        title: validatedData.title,
+        notes: validatedData.notes,
+        date: validatedData.date,
+        isFamilyOnly: validatedData.familyOnly,
+        tags: {
+          set: [], // disconnect all first
+          connect: tagRecords.map((tag) => ({ id: tag.id })),
+        },
+        albums: {
+          set: [], // disconnect all first
+          connect: albumRecords.map((album) => ({ id: album.id })),
+        },
+      },
+      include: {
+        tags: true,
+        albums: true,
+      },
+    });
 
     // Revalidate the photo and album pages
     revalidatePath(`/photos/${photoId}`);
@@ -32,7 +83,12 @@ export async function updatePhoto(
     return {
       success: true,
       message: 'Photo updated successfully',
-      data: validatedData,
+      data: {
+        ...updatedPhoto,
+        familyOnly: updatedPhoto.isFamilyOnly,
+        tags: updatedPhoto.tags.map((t) => t.name),
+        albums: updatedPhoto.albums.map((a) => ({ id: a.id, name: a.name })),
+      },
     };
   } catch (error) {
     console.error('Error updating photo:', error);

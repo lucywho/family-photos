@@ -93,6 +93,7 @@ export function LoginForm() {
                     type='email'
                     placeholder='Enter your email address'
                     disabled={isLoggingIn}
+                    className='focus:bg-secondary focus:text-background'
                   />
                 </div>
               </FormControl>
