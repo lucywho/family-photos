@@ -23,14 +23,21 @@ export async function updatePhoto(
     const validatedData = photoEditSchema.parse(rawData);
 
     // --- TAGS ---
-    // Find or create tags, get their IDs
+    // Find or create tags (case-insensitive), get their IDs
     const tagRecords = await Promise.all(
       (validatedData.tags || []).map(async (tagName: string) => {
-        return prisma.tag.upsert({
-          where: { name: tagName },
-          update: {},
-          create: { name: tagName },
+        // Find existing tag (case-insensitive)
+        const existingTag = await prisma.tag.findFirst({
+          where: {
+            name: {
+              equals: tagName,
+              mode: 'insensitive',
+            },
+          },
         });
+        if (existingTag) return existingTag;
+        // Create new tag with the entered casing
+        return prisma.tag.create({ data: { name: tagName } });
       })
     );
 
