@@ -45,7 +45,7 @@ interface PhotoEditFormProps {
   allTags: Tag[];
   allAlbums: Album[];
   onCancel: () => void;
-  onSave: (updatedPhoto: Photo) => void;
+  onSave: (updatedPhoto: Photo) => void | Promise<void>;
 }
 
 const initialFormState: PhotoEditResponse = {

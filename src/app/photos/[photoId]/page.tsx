@@ -211,8 +211,28 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   };
 
   const handleCancelEdit = () => setIsEditing(false);
-  const handleSaveEdit = (updatedPhoto: Photo) => {
-    setPhoto(updatedPhoto);
+  const handleSaveEdit = async (updatedPhoto: Photo) => {
+    try {
+      const response = await fetch(`/api/photos/${updatedPhoto.id}`);
+      if (response.ok) {
+        const freshPhoto = await response.json();
+        setPhoto({
+          ...freshPhoto,
+          tags: freshPhoto.tags ?? [],
+        });
+      } else {
+        // fallback to optimistic update if fetch fails
+        setPhoto({
+          ...updatedPhoto,
+          tags: updatedPhoto.tags ?? [],
+        });
+      }
+    } catch (err) {
+      setPhoto({
+        ...updatedPhoto,
+        tags: updatedPhoto.tags ?? [],
+      });
+    }
     setIsEditing(false);
   };
 
