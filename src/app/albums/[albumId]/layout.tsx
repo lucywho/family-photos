@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { AlbumProvider } from '@/contexts/AlbumContext';
-import { Header } from '@/components/layout/Header';
 import React from 'react';
 
 interface Album {
@@ -45,12 +44,7 @@ function AlbumLayoutContent({
       });
   }, [albumId]);
 
-  return (
-    <AlbumProvider album={album}>
-      <Header />
-      {children}
-    </AlbumProvider>
-  );
+  return <AlbumProvider album={album}>{children}</AlbumProvider>;
 }
 
 // Server component that handles params
