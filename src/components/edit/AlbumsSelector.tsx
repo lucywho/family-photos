@@ -95,6 +95,7 @@ export function AlbumsSelector({
                 className='bg-secondary text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white'
                 onClick={() => onSelect(album)}
                 disabled={pending}
+                aria-label={`Add to album ${album.name}`}
               >
                 {album.name}
               </button>
