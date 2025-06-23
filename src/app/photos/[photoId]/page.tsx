@@ -7,7 +7,6 @@ import { useSession } from 'next-auth/react';
 import { MAX_RETRIES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { PhotoEditForm } from './PhotoEditForm';
-import { Header } from '@/components/layout/Header';
 import { Photo, PhotoPageProps } from '@/types/photo';
 import { Card, CardContent } from '@/components/ui/card';
 import { PhotoInfo } from '@/components/photos/PhotoInfo';
@@ -285,7 +284,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
 
   return (
     <>
-      <Header />
       <div className='container mx-auto p-4'>
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
