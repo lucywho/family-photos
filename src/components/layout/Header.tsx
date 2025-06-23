@@ -5,7 +5,7 @@ import { APP_NAME } from '@/lib/constants';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
-import { Home, LibraryBig, LogOut, Camera } from 'lucide-react';
+import { Camera, Home, LayoutGrid, LibraryBig, LogOut } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 export function Header() {
@@ -15,10 +15,15 @@ export function Header() {
   const username = session?.user?.name || 'Guest';
   const [photoHash, setPhotoHash] = useState('');
 
+  console.log('data: ', session);
+
   const showHomeButton = pathname !== '/';
   const showAllAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
   const albumId = searchParams.get('albumId');
+
+  const isAdmin = session?.user.role === 'ADMIN';
+  const dashboardPage = pathname.startsWith('/dashboard');
 
   // Get the photo hash from the current URL to preserve scroll position
   useEffect(() => {
@@ -55,6 +60,34 @@ export function Header() {
           <div className='px-3 py-1 rounded-full bg-primary text-text text-sm font-medium'>
             {username}
           </div>
+
+          {isAdmin && !dashboardPage && (
+            <Button
+              variant='ghost'
+              size='sm'
+              asChild
+              className='text-text hover:text-primary hover:bg-secondary'
+            >
+              <Link href='/dashboard'>
+                <LayoutGrid className='h-4 w-4 md:mr-2' />
+                <span className='hidden md:inline'>Dashboard</span>
+              </Link>
+            </Button>
+          )}
+
+          {isAdmin && dashboardPage && (
+            <Button
+              variant='ghost'
+              size='sm'
+              asChild
+              className='text-text hover:text-primary hover:bg-secondary'
+            >
+              <Link href='/albums'>
+                <LibraryBig className='h-4 w-4 md:mr-2' />
+                <span className='hidden md:inline'>Albums</span>
+              </Link>
+            </Button>
+          )}
 
           {showHomeButton && (
             <Button
