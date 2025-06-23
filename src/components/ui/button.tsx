@@ -8,12 +8,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-text hover:bg-primary-hover',
-        destructive:
-          'bg-secondary text-destructive shadow-sm hover:bg-primary-hover',
+        default: 'bg-primary text-text hover:bg-primaryHover',
+        destructive: 'bg-background text-text shadow-sm hover:bg-primaryHover',
         secondary:
-          'bg-secondary text-primary hover:bg-primary-hover hover:text-secondary',
-        ghost: 'hover:bg-[hsl(var(--background-secondary))] hover:text-text',
+          'bg-secondary text-primary hover:bg-primaryHover hover:text-secondary',
+        ghost: 'hover:bg-backgroundSecondary hover:text-text',
         link: 'text-secondary underline-offset-4 hover:underline hover:text-primary',
       },
       size: {

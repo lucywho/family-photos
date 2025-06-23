@@ -43,39 +43,3 @@
     box-shadow: 0 0 0 2px hsl(var(--focus-ring) / 0.5);
   }
 }
-
-@layer utilities {
-  .bg-primary {
-    @apply bg-[hsl(var(--primary))];
-  }
-  .bg-primary-hover {
-    @apply bg-[hsl(var(--primary-hover))];
-  }
-  .bg-secondary {
-    @apply bg-[hsl(var(--secondary))];
-  }
-  .text-primary {
-    @apply text-[hsl(var(--primary))];
-  }
-  .text-secondary {
-    @apply text-[hsl(var(--secondary))];
-  }
-  .text-text {
-    @apply text-[hsl(var(--text))];
-  }
-  .text-destructive {
-    @apply text-[hsl(var(--destructive))];
-  }
-  .text-success {
-    @apply text-[hsl(var(--success))];
-  }
-  .text-warning {
-    @apply text-[hsl(var(--warning))];
-  }
-  .border-primary {
-    @apply border-[hsl(var(--primary))];
-  }
-  .border-secondary {
-    @apply border-[hsl(var(--background-secondary))];
-  }
-}
