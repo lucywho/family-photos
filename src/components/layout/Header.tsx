@@ -1,14 +1,12 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
-import { Home, LibraryBig, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { APP_NAME } from '@/lib/constants';
-import { Camera } from 'lucide-react';
-import { useAlbum } from '@/contexts/AlbumContext';
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { useSession, signOut } from 'next-auth/react';
+import { Home, LibraryBig, LogOut, Camera } from 'lucide-react';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export function Header() {
   const pathname = usePathname();
@@ -17,17 +15,8 @@ export function Header() {
   const username = session?.user?.name || 'Guest';
   const [photoHash, setPhotoHash] = useState('');
 
-  // Try to get album data, but don't throw if not in AlbumProvider
-  let album = null;
-  try {
-    const albumContext = useAlbum();
-    album = albumContext.album;
-  } catch {
-    // Not in AlbumProvider context, which is fine
-  }
-
   const showHomeButton = pathname !== '/';
-  const showBackToAlbumsButton = pathname.startsWith('/albums/');
+  const showAllAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
   const albumId = searchParams.get('albumId');
 
@@ -61,11 +50,6 @@ export function Header() {
             </Link>
           </div>
         </div>
-        {album && (
-          <div className='text-xl md:text-2xl font-semibold text-primary'>
-            {album.name}
-          </div>
-        )}
 
         <div className='flex items-center gap-4'>
           <div className='px-3 py-1 rounded-full bg-primary text-text text-sm font-medium'>
@@ -85,7 +69,7 @@ export function Header() {
               </Link>
             </Button>
           )}
-          {showBackToAlbumsButton && (
+          {showAllAlbumsButton && (
             <Button
               variant='ghost'
               size='sm'
