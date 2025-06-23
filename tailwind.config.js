@@ -15,6 +15,7 @@ module.exports = {
         secondary: 'hsl(var(--secondary))',
         text: 'hsl(var(--text))',
         destructive: 'hsl(var(--destructive))',
+        textDestructive: 'hsl(var(--background))',
         success: 'hsl(var(--success))',
         warning: 'hsl(var(--warning))',
       },

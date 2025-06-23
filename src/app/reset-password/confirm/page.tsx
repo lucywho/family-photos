@@ -14,7 +14,7 @@ export default function ConfirmResetPasswordPage({
 }) {
   if (!searchParams.token) {
     return (
-      <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
+      <main className='min-h-screen bg-background p-4'>
         <div className='max-w-[400px] mx-auto'>
           <Card>
             <CardHeader>
@@ -35,7 +35,7 @@ export default function ConfirmResetPasswordPage({
   }
 
   return (
-    <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
+    <main className='min-h-screen bg-background p-4'>
       <div className='max-w-[400px] mx-auto'>
         <Card>
           <CardHeader>
