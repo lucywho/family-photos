@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { normalizePhoto } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { MAX_RETRIES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
 import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
 import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
+import { createPhotoHandlers } from './photoHandlers';
+
+interface Tag {
+  id: number;
+  name: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+interface Album {
+  id: number;
+  name: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
 
 export default function PhotoPage({ params }: PhotoPageProps) {
   const { data: session } = useSession();
@@ -24,8 +40,8 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
-  const [allTags, setAllTags] = useState([]);
-  const [allAlbums, setAllAlbums] = useState([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [allAlbums, setAllAlbums] = useState<Album[]>([]);
 
   // Get the resolved params
   const { photoId } = React.use(params);
@@ -45,6 +61,27 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       updatePhotoIndex(photo.id);
     }
   }, [photo, updatePhotoIndex]);
+
+  // Create handlers
+  const {
+    handleRetry,
+    handlePreviousPhoto,
+    handleNextPhoto,
+    handleEditClick,
+    handleCancelEdit,
+    handleSaveEdit,
+  } = createPhotoHandlers(
+    setIsLoading,
+    setRetryCount,
+    setPhoto,
+    setAllTags,
+    setAllAlbums,
+    setIsEditing,
+    router,
+    albumPhotos,
+    photo,
+    sourceAlbumId
+  );
 
   // Try to get photo data from URL first, fall back to API if not available
   useEffect(() => {
@@ -160,90 +197,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
     }, backoffDelay);
   };
 
-  const handleRetry = () => {
-    setRetryCount(0);
-    setIsLoading(true);
-  };
-
-  const handlePreviousPhoto = () => {
-    if (canNavigatePrevious && albumPhotos.length > 0) {
-      const currentIndex = albumPhotos.findIndex((p) => p.id === photo?.id);
-      if (currentIndex > 0) {
-        const previousPhoto = albumPhotos[currentIndex - 1];
-        navigateToPhoto(previousPhoto.id);
-      }
-    }
-  };
-
-  const handleNextPhoto = () => {
-    if (canNavigateNext && albumPhotos.length > 0) {
-      const currentIndex = albumPhotos.findIndex((p) => p.id === photo?.id);
-      if (currentIndex < albumPhotos.length - 1) {
-        const nextPhoto = albumPhotos[currentIndex + 1];
-        navigateToPhoto(nextPhoto.id);
-      }
-    }
-  };
-
-  const navigateToPhoto = (newPhotoId: number) => {
-    setIsLoading(true);
-    setRetryCount(0);
-
-    // Navigate to the new photo with hash to preserve scroll position
-    const newUrl = `/photos/${newPhotoId}${
-      sourceAlbumId ? `?albumId=${sourceAlbumId}` : ''
-    }#photo-${newPhotoId}`;
-    router.push(newUrl);
-  };
-
-  const handleEditClick = async () => {
-    // Fetch tags and albums only when entering edit mode
-    const [tags, albums] = await Promise.all([
-      fetch('/api/tags').then((res) => res.json()),
-      fetch('/api/albums/all').then((res) => res.json()),
-    ]);
-    if (tags) {
-      setAllTags(tags);
-    }
-    setAllAlbums(albums);
-    setIsEditing(true);
-  };
-
-  const handleCancelEdit = () => setIsEditing(false);
-  const handleSaveEdit = async (updatedPhoto: Photo) => {
-    try {
-      const response = await fetch(`/api/photos/${updatedPhoto.id}`);
-      if (response.ok) {
-        const freshPhoto = await response.json();
-        setPhoto(normalizePhoto(freshPhoto));
-      } else {
-        setPhoto(normalizePhoto(updatedPhoto));
-      }
-    } catch (err) {
-      setPhoto(normalizePhoto(updatedPhoto));
-    }
-    setIsEditing(false);
-  };
-
-  // Helper to normalize photo object
-  function normalizePhoto(photo: unknown): Photo {
-    const p = photo as Partial<Photo> & {
-      tags?: unknown[];
-      albums?: unknown[];
-    };
-    return {
-      ...p,
-      tags: (p.tags ?? []).map((t) =>
-        typeof t === 'string' ? t : (t as { name: string }).name
-      ),
-      albums: (p.albums ?? []).map((a) =>
-        typeof a === 'object' && a !== null
-          ? { id: (a as { id: number }).id, name: (a as { name: string }).name }
-          : (a as { id: number; name: string })
-      ),
-    } as Photo;
-  }
-
   if (isLoading) {
     return (
       <div className='container mx-auto p-4 space-y-4'>
@@ -283,7 +236,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   const isAdmin = session?.user?.role === 'ADMIN';
 
   return (
-    <>
+    <div className='min-h-screen'>
       <div className='container mx-auto p-4'>
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
@@ -324,6 +277,6 @@ export default function PhotoPage({ params }: PhotoPageProps) {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }
