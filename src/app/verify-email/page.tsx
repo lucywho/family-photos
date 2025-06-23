@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { verifyEmail } from '@/app/actions/auth';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardDescription } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle2, Loader2, Mail } from 'lucide-react';
-import { Camera } from 'lucide-react';
 import { APP_NAME } from '@/lib/constants';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { verifyEmail } from '@/app/actions/auth';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardHeader, CardDescription } from '@/components/ui/card';
+import { AlertCircle, CheckCircle2, Camera, Loader2, Mail } from 'lucide-react';
 
 type VerificationState = 'verifying' | 'success' | 'expired' | 'error';
 
@@ -80,7 +79,7 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
+    <main className='min-h-screen bg-background p-4'>
       <div className='max-w-[400px] mx-auto'>
         {/* Header Section */}
         <section className='text-center pb-8'>

@@ -23,7 +23,7 @@ export function CancelAlert({
 }: CancelAlertProps) {
   return (
     <AlertDialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-      <AlertDialogContent className='bg-primary border-primary'>
+      <AlertDialogContent className='bg-background border-destructive'>
         <AlertDialogHeader>
           <AlertDialogTitle>Discard changes?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -39,7 +39,7 @@ export function CancelAlert({
           <AlertDialogAction asChild>
             <Button
               variant='destructive'
-              className='my-4 text-warning '
+              className='my-4'
               onClick={() => {
                 setShowConfirmModal(false);
                 onCancel();

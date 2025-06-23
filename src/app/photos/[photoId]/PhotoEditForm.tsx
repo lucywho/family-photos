@@ -224,6 +224,12 @@ export function PhotoEditForm({
 
   const fieldErrors = formState.errors || {};
 
+  const titleErrorId = 'title-error';
+  const notesErrorId = 'notes-error';
+  const dateErrorId = 'date-error';
+  const tagsErrorId = 'tags-error';
+  const albumsErrorId = 'albums-error';
+
   function getFormDataObj() {
     return {
       title,
@@ -297,13 +303,14 @@ export function PhotoEditForm({
       <form
         className='flex flex-col md:flex-row gap-8 mx-16'
         action={formAction}
+        aria-label='Edit photo form'
       >
         <div className='flex-1 space-y-4'>
           <h2 className='text-xl font-bold mb-2 text-center'>
             Edit: {photo.title || 'untitled'}
           </h2>
           {formState.message && !formState.success && (
-            <div className='text-destructive text-center'>
+            <div className='text-destructive text-center' role='alert'>
               {formState.message}
             </div>
           )}
@@ -313,14 +320,30 @@ export function PhotoEditForm({
             onChange={setTitle}
             disabled={isPending}
             placeholder={photo.title || 'Title'}
+            aria-label='Photo title'
+            aria-invalid={!!fieldErrors.title}
+            aria-describedby={fieldErrors.title ? titleErrorId : undefined}
           />
+          {fieldErrors.title && (
+            <div id={titleErrorId} className='text-destructive' role='alert'>
+              {fieldErrors.title.join(' ')}
+            </div>
+          )}
           <NotesInput
             value={notes}
             error={fieldErrors.notes?.join(' ')}
             onChange={setNotes}
             disabled={isPending}
             placeholder={photo.notes || 'Notes'}
+            aria-label='Photo notes'
+            aria-invalid={!!fieldErrors.notes}
+            aria-describedby={fieldErrors.notes ? notesErrorId : undefined}
           />
+          {fieldErrors.notes && (
+            <div id={notesErrorId} className='text-destructive' role='alert'>
+              {fieldErrors.notes.join(' ')}
+            </div>
+          )}
           <DateInput
             value={date}
             error={dateClientError || fieldErrors.date?.join(' ')}
@@ -328,11 +351,22 @@ export function PhotoEditForm({
             onClear={handleClearDate}
             disabled={isPending}
             placeholder={photo.date ? formatDate(photo.date) : 'dd/mm/yyyy'}
+            aria-label='Photo date'
+            aria-invalid={!!(dateClientError || fieldErrors.date)}
+            aria-describedby={
+              dateClientError || fieldErrors.date ? dateErrorId : undefined
+            }
           />
+          {(dateClientError || fieldErrors.date) && (
+            <div id={dateErrorId} className='text-destructive' role='alert'>
+              {dateClientError || fieldErrors.date?.join(' ')}
+            </div>
+          )}
           <FamilyOnlyCheckbox
             value={familyOnly}
             onChange={setFamilyOnly}
             disabled={isPending}
+            aria-label='Family only photo'
           />
           <TagsSelector
             tags={tags}
@@ -345,7 +379,17 @@ export function PhotoEditForm({
             onRemove={handleRemoveTag}
             onSelect={handleSelectTag}
             onInputKeyDown={handleTagInputKeyDown}
+            aria-label='Photo tags'
+            aria-invalid={!!(tagClientError || fieldErrors.tags)}
+            aria-describedby={
+              tagClientError || fieldErrors.tags ? tagsErrorId : undefined
+            }
           />
+          {(tagClientError || fieldErrors.tags) && (
+            <div id={tagsErrorId} className='text-destructive' role='alert'>
+              {tagClientError || fieldErrors.tags?.join(' ')}
+            </div>
+          )}
           <AlbumsSelector
             albums={albums}
             allAlbums={allAlbumsSafe}
@@ -357,17 +401,33 @@ export function PhotoEditForm({
             onRemove={handleRemoveAlbum}
             onSelect={handleSelectAlbum}
             onInputKeyDown={handleAlbumInputKeyDown}
+            aria-label='Photo albums'
+            aria-invalid={!!(albumClientError || fieldErrors.albums)}
+            aria-describedby={
+              albumClientError || fieldErrors.albums ? albumsErrorId : undefined
+            }
           />
+          {(albumClientError || fieldErrors.albums) && (
+            <div id={albumsErrorId} className='text-destructive' role='alert'>
+              {albumClientError || fieldErrors.albums?.join(' ')}
+            </div>
+          )}
           <div className='flex gap-2 justify-center'>
             <Button
               type='button'
               variant='secondary'
               onClick={handleCancelClick}
               disabled={isPending}
+              aria-label='Cancel editing photo'
             >
               Cancel
             </Button>
-            <Button type='submit' variant='default' disabled={isDisabled()}>
+            <Button
+              type='submit'
+              variant='default'
+              disabled={isDisabled()}
+              aria-label='Save photo edits'
+            >
               Save
             </Button>
           </div>
