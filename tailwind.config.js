@@ -6,7 +6,19 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: 'hsl(var(--background))',
+        backgroundSecondary: 'hsl(var(--background-secondary))',
+        primary: 'hsl(var(--primary))',
+        primaryHover: 'hsl(var(--primary-hover))',
+        secondary: 'hsl(var(--secondary))',
+        text: 'hsl(var(--text))',
+        destructive: 'hsl(var(--destructive))',
+        success: 'hsl(var(--success))',
+        warning: 'hsl(var(--warning))',
+      },
+    },
   },
   plugins: [],
   // Ensure all utilities are enabled
