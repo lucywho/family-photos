@@ -1,6 +1,8 @@
 'use client';
 
 import isEqual from 'lodash.isequal';
+import { formatDate } from '@/lib/utils';
+import { CancelAlert } from './CancelAlert';
 import { Button } from '@/components/ui/button';
 import { updatePhoto } from '@/app/actions/photos';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,13 +10,12 @@ import { DateInput } from '@/components/edit/DateInput';
 import { TitleInput } from '@/components/edit/TitleInput';
 import { NotesInput } from '@/components/edit/NotesInput';
 import { useState, useEffect, useActionState } from 'react';
-import type { PhotoEditResponse } from '@/lib/schemas/photo';
 import { TagsSelector } from '@/components/edit/TagsSelector';
 import { AlbumsSelector } from '@/components/edit/AlbumsSelector';
 import { MAX_TAG_LENGTH, MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
 import { FamilyOnlyCheckbox } from '@/components/edit/FamilyOnlyCheckbox';
-// import { updatePhoto } from '@/app/actions/photos'; // Uncomment when server action is ready
 
+import type { PhotoEditResponse } from '@/lib/schemas/photo';
 interface Photo {
   id: number;
   url: string;
@@ -78,16 +79,7 @@ export function PhotoEditForm({
   );
   const [albumInput, setAlbumInput] = useState('');
   const [albumClientError, setAlbumClientError] = useState<string | null>(null);
-
-  // Helper to format ISO date to dd/mm/yyyy
-  function formatDate(iso: string) {
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Tags logic
   const handleAddTag = () => {
@@ -268,82 +260,125 @@ export function PhotoEditForm({
     );
   };
 
+  const hasUnsavedChanges = () => {
+    const currentFormData = {
+      title,
+      notes,
+      date,
+      familyOnly,
+      tags: tags.map((t) => t.trim().toLowerCase()).sort(),
+      albums: albums.map((a) => a.name.trim().toLowerCase()).sort(),
+    };
+
+    const initialFormData = {
+      title: photo.title || '',
+      notes: photo.notes || '',
+      date: photo.date ? formatDate(photo.date) : '',
+      familyOnly: !!photo.isFamilyOnly,
+      tags: (photo.tags || []).map((t) => t.trim().toLowerCase()).sort(),
+      albums: (photo.albums || [])
+        .map((a) => a.name.trim().toLowerCase())
+        .sort(),
+    };
+
+    return !isEqual(currentFormData, initialFormData);
+  };
+
+  const handleCancelClick = () => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmModal(true);
+    } else {
+      onCancel();
+    }
+  };
+
   return (
-    <form className='flex flex-col md:flex-row gap-8 mx-16' action={formAction}>
-      <div className='flex-1 space-y-4'>
-        <h2 className='text-xl font-bold mb-2 text-center'>
-          Edit: {photo.title || 'untitled'}
-        </h2>
-        {formState.message && !formState.success && (
-          <div className='text-destructive text-center'>
-            {formState.message}
-          </div>
-        )}
-        <TitleInput
-          value={title}
-          error={fieldErrors.title?.join(' ')}
-          onChange={setTitle}
-          disabled={isPending}
-          placeholder={photo.title || 'Title'}
-        />
-        <NotesInput
-          value={notes}
-          error={fieldErrors.notes?.join(' ')}
-          onChange={setNotes}
-          disabled={isPending}
-          placeholder={photo.notes || 'Notes'}
-        />
-        <DateInput
-          value={date}
-          error={dateClientError || fieldErrors.date?.join(' ')}
-          onChange={handleDateChange}
-          onClear={handleClearDate}
-          disabled={isPending}
-          placeholder={photo.date ? formatDate(photo.date) : 'dd/mm/yyyy'}
-        />
-        <FamilyOnlyCheckbox
-          value={familyOnly}
-          onChange={setFamilyOnly}
-          disabled={isPending}
-        />
-        <TagsSelector
-          tags={tags}
-          allTags={_allTags}
-          inputValue={tagInput}
-          error={tagClientError || fieldErrors.tags?.join(' ')}
-          pending={isPending}
-          onInputChange={setTagInput}
-          onAdd={handleAddTag}
-          onRemove={handleRemoveTag}
-          onSelect={handleSelectTag}
-          onInputKeyDown={handleTagInputKeyDown}
-        />
-        <AlbumsSelector
-          albums={albums}
-          allAlbums={allAlbumsSafe}
-          inputValue={albumInput}
-          error={albumClientError || fieldErrors.albums?.join(' ')}
-          pending={isPending}
-          onInputChange={setAlbumInput}
-          onAdd={handleAddAlbum}
-          onRemove={handleRemoveAlbum}
-          onSelect={handleSelectAlbum}
-          onInputKeyDown={handleAlbumInputKeyDown}
-        />
-        <div className='flex gap-2 justify-center'>
-          <Button
-            type='button'
-            variant='secondary'
-            onClick={onCancel}
+    <>
+      <form
+        className='flex flex-col md:flex-row gap-8 mx-16'
+        action={formAction}
+      >
+        <div className='flex-1 space-y-4'>
+          <h2 className='text-xl font-bold mb-2 text-center'>
+            Edit: {photo.title || 'untitled'}
+          </h2>
+          {formState.message && !formState.success && (
+            <div className='text-destructive text-center'>
+              {formState.message}
+            </div>
+          )}
+          <TitleInput
+            value={title}
+            error={fieldErrors.title?.join(' ')}
+            onChange={setTitle}
             disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <Button type='submit' variant='default' disabled={isDisabled()}>
-            Save
-          </Button>
+            placeholder={photo.title || 'Title'}
+          />
+          <NotesInput
+            value={notes}
+            error={fieldErrors.notes?.join(' ')}
+            onChange={setNotes}
+            disabled={isPending}
+            placeholder={photo.notes || 'Notes'}
+          />
+          <DateInput
+            value={date}
+            error={dateClientError || fieldErrors.date?.join(' ')}
+            onChange={handleDateChange}
+            onClear={handleClearDate}
+            disabled={isPending}
+            placeholder={photo.date ? formatDate(photo.date) : 'dd/mm/yyyy'}
+          />
+          <FamilyOnlyCheckbox
+            value={familyOnly}
+            onChange={setFamilyOnly}
+            disabled={isPending}
+          />
+          <TagsSelector
+            tags={tags}
+            allTags={_allTags}
+            inputValue={tagInput}
+            error={tagClientError || fieldErrors.tags?.join(' ')}
+            pending={isPending}
+            onInputChange={setTagInput}
+            onAdd={handleAddTag}
+            onRemove={handleRemoveTag}
+            onSelect={handleSelectTag}
+            onInputKeyDown={handleTagInputKeyDown}
+          />
+          <AlbumsSelector
+            albums={albums}
+            allAlbums={allAlbumsSafe}
+            inputValue={albumInput}
+            error={albumClientError || fieldErrors.albums?.join(' ')}
+            pending={isPending}
+            onInputChange={setAlbumInput}
+            onAdd={handleAddAlbum}
+            onRemove={handleRemoveAlbum}
+            onSelect={handleSelectAlbum}
+            onInputKeyDown={handleAlbumInputKeyDown}
+          />
+          <div className='flex gap-2 justify-center'>
+            <Button
+              type='button'
+              variant='secondary'
+              onClick={handleCancelClick}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' variant='default' disabled={isDisabled()}>
+              Save
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+
+      <CancelAlert
+        showConfirmModal={showConfirmModal}
+        setShowConfirmModal={setShowConfirmModal}
+        onCancel={onCancel}
+      />
+    </>
   );
 }
