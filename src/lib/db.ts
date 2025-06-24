@@ -14,7 +14,7 @@ export async function getUsers() {
   return prisma.user.findMany({
     where: {
       NOT: {
-        AND: [{ username: 'Guest' }, { email: 'guest@family-photos.app' }],
+        AND: { username: 'Guest' },
       },
     },
     orderBy: { username: 'asc' },
