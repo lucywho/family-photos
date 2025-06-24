@@ -9,6 +9,12 @@ import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
 
 // --- User Management ---
 
+const UpdateUserSchema = z.object({
+  username: z.string().min(1, 'Username is required.'),
+  email: z.string().email('Invalid email address.'),
+  role: z.nativeEnum(UserRole),
+});
+
 export async function approveUser(userId: number) {
   const session = await requireAdmin();
   if (!session) {
@@ -31,23 +37,46 @@ export async function approveUser(userId: number) {
   }
 }
 
-const UpdateUserSchema = z.object({
-  username: z.string().min(1, 'Username is required.'),
-  email: z.string().email('Invalid email address.'),
-  role: z.nativeEnum(UserRole),
-});
+export async function deleteUser(userId: number) {
+  const session = await requireAdmin();
+  if (!session) {
+    return { success: false, message: 'Unauthorized' };
+  }
 
-export async function updateUser(userId: number, formData: FormData) {
+  try {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+    revalidatePath('/dashboard');
+    return { success: true, message: 'User deleted successfully.' };
+  } catch (e) {
+    console.error(e);
+    return {
+      success: false,
+      message: 'Database error: Could not delete user.',
+    };
+  }
+}
+
+export async function updateUser(
+  userId: number,
+  data: FormData | { username: string; email: string; role: string }
+) {
   const session = await requireAdmin();
   if (!session) {
     return { success: false, message: 'Unauthorized', errors: null };
   }
 
-  const validatedFields = UpdateUserSchema.safeParse({
-    username: formData.get('username'),
-    email: formData.get('email'),
-    role: formData.get('role'),
-  });
+  let validatedFields;
+  if (data instanceof FormData) {
+    validatedFields = UpdateUserSchema.safeParse({
+      username: data.get('username'),
+      email: data.get('email'),
+      role: data.get('role'),
+    });
+  } else {
+    validatedFields = UpdateUserSchema.safeParse(data);
+  }
 
   if (!validatedFields.success) {
     return {
@@ -82,7 +111,7 @@ const NameSchema = z.object({
     .min(1, 'Name is required.')
     .max(
       MAX_ALBUM_NAME_LENGTH,
-      `Name must be {MAX_ALBUM_NAME_LENGTH} characters or less.`
+      `Name must be ${MAX_ALBUM_NAME_LENGTH} characters or less.`
     ),
 });
 

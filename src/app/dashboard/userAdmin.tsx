@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { getPendingUsers, getUsers } from '@/lib/db';
 import UserApprovalRow from './UserApprovalRow';
+import UserManagementRow from './UserManagementRow';
 
 interface UserAdminProps {
   showAllUsers?: boolean;
@@ -37,13 +38,13 @@ export default async function UserAdmin({
   return (
     <div className='rounded-md border'>
       <div className='divide-y divide-border'>
-        {users.map((user) => (
-          <UserApprovalRow
-            key={user.id}
-            user={user}
-            showAllUsers={showAllUsers}
-          />
-        ))}
+        {users.map((user) =>
+          showAllUsers ? (
+            <UserManagementRow key={user.id} user={user} />
+          ) : (
+            <UserApprovalRow key={user.id} user={user} />
+          )
+        )}
       </div>
     </div>
   );
