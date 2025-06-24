@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
 import { Camera, Home, LayoutGrid, LibraryBig, LogOut } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { PendingUsersBadge } from '@/components/layout/PendingUsersBadge';
 
 export function Header() {
   const pathname = usePathname();
@@ -14,8 +15,6 @@ export function Header() {
   const { data: session } = useSession();
   const username = session?.user?.name || 'Guest';
   const [photoHash, setPhotoHash] = useState('');
-
-  console.log('data: ', session);
 
   const showHomeButton = pathname !== '/';
   const showAllAlbumsButton = pathname.startsWith('/albums/');
@@ -66,11 +65,12 @@ export function Header() {
               variant='ghost'
               size='sm'
               asChild
-              className='text-text hover:text-primary hover:bg-secondary'
+              className='text-text hover:text-primary hover:bg-secondary relative'
             >
               <Link href='/dashboard'>
                 <LayoutGrid className='h-4 w-4 md:mr-2' />
                 <span className='hidden md:inline'>Dashboard</span>
+                <PendingUsersBadge />
               </Link>
             </Button>
           )}
