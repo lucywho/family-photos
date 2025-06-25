@@ -240,24 +240,26 @@ export default function PhotoPage({ params }: PhotoPageProps) {
       <div className='container mx-auto p-4'>
         <Card className='max-w-4xl mx-auto'>
           <CardContent className='p-4 space-y-4'>
-            <PhotoDisplay
-              photo={photo}
-              isLoading={isLoading}
-              onLoad={() => {
-                setIsLoading(false);
-                setRetryCount(0);
-              }}
-              onError={handleImageError}
-              retryCount={retryCount}
-              onRetry={handleRetry}
-            />
-            <div className='relative'>
-              <PhotoNavigation
-                canNavigatePrevious={canNavigatePrevious}
-                canNavigateNext={canNavigateNext}
-                onPrevious={handlePreviousPhoto}
-                onNext={handleNextPhoto}
-              />
+            <div>
+              <div className='relative'>
+                <PhotoNavigation
+                  canNavigatePrevious={canNavigatePrevious}
+                  canNavigateNext={canNavigateNext}
+                  onPrevious={handlePreviousPhoto}
+                  onNext={handleNextPhoto}
+                />
+                <PhotoDisplay
+                  photo={photo}
+                  isLoading={isLoading}
+                  onLoad={() => {
+                    setIsLoading(false);
+                    setRetryCount(0);
+                  }}
+                  onError={handleImageError}
+                  retryCount={retryCount}
+                  onRetry={handleRetry}
+                />
+              </div>
               {isEditing ? (
                 <PhotoEditForm
                   photo={photo}

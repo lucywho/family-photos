@@ -17,7 +17,7 @@ export function PhotoNavigation({
   onNext,
 }: PhotoNavigationProps) {
   return (
-    <div className='absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none z-10'>
+    <div className='absolute inset-x-0 top-4 -translate-y-1/2 flex justify-between pointer-events-none z-10'>
       <Button
         variant='secondary'
         size='icon'
