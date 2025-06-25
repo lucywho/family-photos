@@ -16,28 +16,30 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className='container mx-auto py-8'>
+    <main className='container px-2 md:mx-auto py-8'>
       <h1 className='text-3xl font-bold mb-6'>Admin Dashboard</h1>
       <p className='text-lg mb-8'>Welcome, {session.user?.name || 'Admin'}!</p>
 
       <Tabs defaultValue='approvals' className='w-full'>
         <TabsList className='grid w-full grid-cols-4'>
-          <TabsTrigger value='approvals'>New Approvals</TabsTrigger>
-          <TabsTrigger value='users'>Member Management</TabsTrigger>
-          <TabsTrigger value='albums'>Album Management</TabsTrigger>
-          <TabsTrigger value='tags'>Tag Management</TabsTrigger>
+          <TabsTrigger value='approvals'>Approvals</TabsTrigger>
+          <TabsTrigger value='users'>Members</TabsTrigger>
+          <TabsTrigger value='albums'>Albums</TabsTrigger>
+          <TabsTrigger value='tags'>Tags</TabsTrigger>
         </TabsList>
 
         <TabsContent value='approvals' className='mt-6'>
           <div className='space-y-4'>
-            <h2 className='text-2xl font-semibold'>New Member Approvals</h2>
+            <h2 className='text-2xl font-semibold pb-4'>
+              New Member Approvals
+            </h2>
             <UserAdmin />
           </div>
         </TabsContent>
 
         <TabsContent value='users' className='mt-6'>
           <div className='space-y-4'>
-            <h2 className='text-2xl font-semibold'>Member Management</h2>
+            <h2 className='text-2xl font-semibold pb-4'>Member Management</h2>
             <UserAdmin showAllUsers />
           </div>
         </TabsContent>

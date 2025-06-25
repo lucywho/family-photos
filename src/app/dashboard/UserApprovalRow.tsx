@@ -3,7 +3,7 @@
 import { useTransition } from 'react';
 import { User } from '@prisma/client';
 import { Button } from '@/components/ui/button';
-import { Check, Edit, Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,10 +18,10 @@ import {
 import { approveUser, deleteUser } from '@/app/actions/admin';
 import { toast } from 'sonner';
 
-export default function UserApprovalRow(user: User) {
+export default function UserApprovalRow({ user }: { user: User }) {
   const [isPending, startTransition] = useTransition();
 
-  // default Guest account should never be edited
+  // Note: default Guest account should never be edited
   const isDefaultGuest =
     user.username === 'Guest' && user.email === 'guest@family-photos.app';
 
@@ -58,47 +58,45 @@ export default function UserApprovalRow(user: User) {
   };
 
   return (
-    <div className='flex items-center justify-between p-4'>
+    <div className='flex items-center justify-between p-2 md:p-4'>
       <div className='grid gap-1'>
         <p className='font-semibold'>{user.username}</p>
         <p className='text-sm text-muted-foreground'>{user.email}</p>
       </div>
-      <div className='flex items-center gap-2'>
-        <span className='text-sm font-medium capitalize text-muted-foreground'>
+      <div className='flex items-center md:gap-2'>
+        <span className='text-xs md:text-sm font-medium capitalize text-muted-foreground'>
           {user.role.toLowerCase()}
         </span>
+        {!isDefaultGuest && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant='ghost' size='icon' aria-label='Approve User'>
+                <Check className='h-4 w-4 md:h-5 md:w-5 text-success' />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Approve {user.username}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This user will now be able to see family-only photos. Are you
+                  sure?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleApprove} disabled={isPending}>
+                  {isPending ? 'Approving...' : 'Approve'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
         {user.role === 'GUEST' && !isDefaultGuest && (
           <>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant='ghost' size='icon' aria-label='Approve User'>
-                  <Check className='h-5 w-5 text-success' />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Approve {user.username}?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This user will now be able to see family-only photos. Are
-                    you sure?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleApprove}
-                    disabled={isPending}
-                  >
-                    {isPending ? 'Approving...' : 'Approve'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
                 <Button variant='ghost' size='icon' aria-label='Delete User'>
-                  <Trash2 className='h-5 w-5 text-warning' />
+                  <Trash2 className='h-4 w-4 md:h-5 md:w-5 text-warning' />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -122,11 +120,6 @@ export default function UserApprovalRow(user: User) {
               </AlertDialogContent>
             </AlertDialog>
           </>
-        )}
-        {!isDefaultGuest && (
-          <Button variant='ghost' size='icon' aria-label='Edit User'>
-            <Edit className='h-4 w-4' />
-          </Button>
         )}
       </div>
     </div>
