@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "albums" ALTER COLUMN "name" SET DATA TYPE VARCHAR(100);
+
+-- AlterTable
+ALTER TABLE "photos" ALTER COLUMN "title" SET DATA TYPE VARCHAR(100);
+
+-- AlterTable
+ALTER TABLE "tags" ALTER COLUMN "name" SET DATA TYPE VARCHAR(100);

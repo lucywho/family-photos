@@ -3,10 +3,10 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth-options';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import UserAdmin from './userAdmin';
-import AlbumAdmin from './albumAdmin';
-import TagAdmin from './tagAdmin';
-import { getAlbumsWithPhotoCount } from '@/lib/db';
+import UserAdmin from '@/components/dashboard/userAdmin';
+import AlbumAdmin from '@/components/dashboard/albumAdmin';
+import TagAdmin from '@/components/dashboard/tagAdmin';
+import { getAlbumsWithPhotoCount, getTagsWithPhotoCount } from '@/lib/db';
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -17,6 +17,7 @@ export default async function DashboardPage() {
   }
 
   const albums = await getAlbumsWithPhotoCount();
+  const tags = await getTagsWithPhotoCount();
 
   return (
     <main className='container px-2 md:mx-auto py-8'>
@@ -57,7 +58,7 @@ export default async function DashboardPage() {
         <TabsContent value='tags' className='mt-6'>
           <div className='space-y-4'>
             <h2 className='text-2xl font-semibold'>Tag Management</h2>
-            <TagAdmin />
+            <TagAdmin tags={tags} />
           </div>
         </TabsContent>
       </Tabs>
