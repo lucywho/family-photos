@@ -26,6 +26,10 @@
   }
 }
 
+html {
+  caret-color: transparent;
+}
+
 @layer base {
   body {
     @apply bg-[hsl(var(--background))] text-[hsl(var(--text))];
@@ -34,6 +38,7 @@
   input,
   textarea {
     color: hsl(var(--input-text));
+    caret-color: hsl(var(--input-text));
   }
 
   input:focus,

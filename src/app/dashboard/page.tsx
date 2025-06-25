@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import UserAdmin from './userAdmin';
 import AlbumAdmin from './albumAdmin';
 import TagAdmin from './tagAdmin';
+import { getAlbumsWithPhotoCount } from '@/lib/db';
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -14,6 +15,8 @@ export default async function DashboardPage() {
   if (!session || session.user?.role !== 'ADMIN') {
     redirect('/not-found');
   }
+
+  const albums = await getAlbumsWithPhotoCount();
 
   return (
     <main className='container px-2 md:mx-auto py-8'>
@@ -47,7 +50,7 @@ export default async function DashboardPage() {
         <TabsContent value='albums' className='mt-6'>
           <div className='space-y-4'>
             <h2 className='text-2xl font-semibold'>Album Management</h2>
-            <AlbumAdmin />
+            <AlbumAdmin albums={albums} />
           </div>
         </TabsContent>
 
