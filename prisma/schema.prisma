@@ -76,7 +76,7 @@ model VerificationToken {
 model Photo {
   id          Int       @id @default(autoincrement())
   url         String    @unique
-  title       String?   @db.VarChar(70)
+  title       String?   @db.VarChar(100)
   notes       String?   @db.VarChar(1000)
   date        DateTime?
   isFamilyOnly Boolean  @default(false)
@@ -90,7 +90,7 @@ model Photo {
 
 model Tag {
   id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(20)
+  name      String   @unique @db.VarChar(100)
   photos    Photo[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -100,7 +100,7 @@ model Tag {
 
 model Album {
   id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(20)
+  name      String   @unique @db.VarChar(100)
   photos    Photo[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")

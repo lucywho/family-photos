@@ -6,7 +6,7 @@ export const PASSWORD_MIN_LENGTH = 6;
 export const PASSWORD_REQUIREMENTS =
   'Password must be at least 6 characters and include a lowercase letter, uppercase letter, and a number';
 
-// Form constants
+// Form constants: note upper limits in database schema
 export const MAX_TITLE_LENGTH = 50;
 export const MAX_NOTES_LENGTH = 500;
 export const MAX_TAG_LENGTH = 20;

@@ -86,7 +86,8 @@ export default function AlbumAdmin({
             <AlertDialogHeader>
               <AlertDialogTitle>Add New Album</AlertDialogTitle>
               <AlertDialogDescription>
-                Enter a name for the new album (max 20 characters).
+                Enter a name for the new album (max {MAX_ALBUM_NAME_LENGTH}{' '}
+                characters).
               </AlertDialogDescription>
             </AlertDialogHeader>
             <form
@@ -97,7 +98,7 @@ export default function AlbumAdmin({
               <input
                 name='name'
                 type='text'
-                maxLength={20}
+                maxLength={MAX_ALBUM_NAME_LENGTH}
                 required
                 className='border rounded px-2 py-1 text-sm'
                 placeholder='Album name'

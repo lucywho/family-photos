@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db';
 import { UserRole } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/admin-auth';
-import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
+import { MAX_ALBUM_NAME_LENGTH, MAX_TAG_LENGTH } from '@/lib/constants';
 
 // --- User Management ---
 
@@ -103,9 +103,9 @@ export async function updateUser(
   }
 }
 
-// --- Album & Tag Management ---
+// --- Album Management ---
 
-const NameSchema = z.object({
+const AlbumNameSchema = z.object({
   name: z
     .string()
     .min(1, 'Name is required.')
@@ -120,13 +120,18 @@ export async function createAlbum(formData: FormData) {
   if (!session) return { success: false, message: 'Unauthorized' };
 
   const name = formData.get('name');
-  const validatedFields = NameSchema.safeParse({ name });
+  const validatedFields = AlbumNameSchema.safeParse({ name });
   if (!validatedFields.success)
     return { success: false, message: validatedFields.error.errors[0].message };
 
   // Check uniqueness
-  const exists = await prisma.album.findUnique({
-    where: { name: validatedFields.data.name },
+  const exists = await prisma.album.findFirst({
+    where: {
+      name: {
+        equals: validatedFields.data.name,
+        mode: 'insensitive',
+      },
+    },
   });
   if (exists) return { success: false, message: 'Album name already exists' };
 
@@ -141,7 +146,7 @@ export async function editAlbum(albumId: number, formData: FormData) {
   if (!session) return { success: false, message: 'Unauthorized' };
 
   const name = formData.get('name');
-  const validatedFields = NameSchema.safeParse({ name });
+  const validatedFields = AlbumNameSchema.safeParse({ name });
   if (!validatedFields.success)
     return { success: false, message: validatedFields.error.errors[0].message };
 
@@ -151,8 +156,13 @@ export async function editAlbum(albumId: number, formData: FormData) {
     return { success: false, message: 'Cannot rename this album' };
 
   // Check uniqueness
-  const exists = await prisma.album.findUnique({
-    where: { name: validatedFields.data.name },
+  const exists = await prisma.album.findFirst({
+    where: {
+      name: {
+        equals: validatedFields.data.name,
+        mode: 'insensitive',
+      },
+    },
   });
   if (exists && exists.id !== albumId)
     return { success: false, message: 'Album name already exists' };
@@ -194,35 +204,68 @@ export async function deleteAlbum(albumId: number) {
   }
 }
 
+// --- Tag Management ---
+
+const TagNameSchema = z
+  .string()
+  .min(1, 'Name is required')
+  .max(
+    MAX_TAG_LENGTH,
+    `Tag name must be ${MAX_TAG_LENGTH} characters or less.`
+  );
+
 export async function createTag(formData: FormData) {
   const session = await requireAdmin();
-  if (!session) {
-    return { success: false, message: 'Unauthorized', errors: null };
-  }
+  if (!session) return { success: false, message: 'Unauthorized' };
 
-  const validatedFields = NameSchema.safeParse({ name: formData.get('name') });
-  if (!validatedFields.success) {
-    return {
-      success: false,
-      message: 'Invalid field.',
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
+  const name = formData.get('name');
+  const parsed = TagNameSchema.safeParse(name);
+  if (!parsed.success)
+    return { success: false, message: parsed.error.errors[0].message };
 
-  try {
-    await prisma.tag.create({
-      data: { name: validatedFields.data.name },
-    });
-    revalidatePath('/dashboard');
-    return { success: true, message: 'Tag created successfully.' };
-  } catch (e) {
-    console.error(e);
-    return {
-      success: false,
-      message: 'Database error: Tag name may already exist.',
-      errors: null,
-    };
-  }
+  // Case-insensitive uniqueness check
+  const exists = await prisma.tag.findFirst({
+    where: {
+      name: {
+        equals: parsed.data,
+        mode: 'insensitive',
+      },
+    },
+  });
+  if (exists) return { success: false, message: 'Tag name already exists' };
+
+  await prisma.tag.create({ data: { name: parsed.data } });
+  revalidatePath('/dashboard');
+  return { success: true, message: 'Tag created' };
+}
+
+export async function editTag(tagId: number, formData: FormData) {
+  const session = await requireAdmin();
+  if (!session) return { success: false, message: 'Unauthorized' };
+
+  const name = formData.get('name');
+  const parsed = TagNameSchema.safeParse(name);
+  if (!parsed.success)
+    return { success: false, message: parsed.error.errors[0].message };
+
+  // Case-insensitive uniqueness check
+  const exists = await prisma.tag.findFirst({
+    where: {
+      name: {
+        equals: parsed.data,
+        mode: 'insensitive',
+      },
+    },
+  });
+  if (exists && exists.id !== tagId)
+    return { success: false, message: 'Tag name already exists' };
+
+  await prisma.tag.update({
+    where: { id: tagId },
+    data: { name: parsed.data },
+  });
+  revalidatePath('/dashboard');
+  return { success: true, message: 'Tag renamed' };
 }
 
 export async function deleteTag(tagId: number) {

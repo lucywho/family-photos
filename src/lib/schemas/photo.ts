@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { isValid, parse } from 'date-fns';
-import { MAX_TITLE_LENGTH, MAX_TAGS, MAX_NOTES_LENGTH } from '../constants';
+import {
+  MAX_TITLE_LENGTH,
+  MAX_TAGS,
+  MAX_NOTES_LENGTH,
+  MAX_ALBUM_NAME_LENGTH,
+  MAX_TAG_LENGTH,
+} from '../constants';
 
 // Custom date validation for dd/mm/yyyy format
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
@@ -17,7 +23,20 @@ const dateStringSchema = z
   });
 
 // Tag and Album name validation
-const nameSchema = z.string().max(20, 'Maximum length is 20 characters').trim();
+const albumNameSchema = z
+  .string()
+  .min(1, 'Name is required')
+  .max(
+    MAX_ALBUM_NAME_LENGTH,
+    `Maximum length is ${MAX_ALBUM_NAME_LENGTH} characters`
+  )
+  .trim();
+
+const tagNameSchema = z
+  .string()
+  .min(1, 'Name is required')
+  .max(MAX_TAG_LENGTH, `Maximum length is ${MAX_TAG_LENGTH} characters`)
+  .trim();
 
 // Schema for editing a photo
 export const photoEditSchema = z.object({
@@ -49,23 +68,35 @@ export const photoEditSchema = z.object({
   familyOnly: z.boolean().default(false),
 
   tags: z
-    .array(nameSchema)
+    .array(tagNameSchema)
     .max(MAX_TAGS, 'Too many tags') // Reasonable limit for tags
-    .transform((tags) => [...new Set(tags)]), // Remove duplicates
+    .transform((tags) => {
+      // Remove duplicates, case-insensitive
+      const seen = new Set<string>();
+      return tags.filter((tag) => {
+        const lower = tag.toLowerCase();
+        if (seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      });
+    }),
 
   albums: z
     .array(
       z.object({
         id: z.number().optional(), // Optional for new albums
-        name: nameSchema,
+        name: albumNameSchema,
       })
     )
     .transform((albums) => {
-      // Remove duplicates based on name
-      return albums.filter(
-        (album, index, self) =>
-          index === self.findIndex((a) => a.name === album.name)
-      );
+      // Remove duplicates based on name, case-insensitive
+      const seen = new Set<string>();
+      return albums.filter((album) => {
+        const lower = album.name.toLowerCase();
+        if (seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      });
     }),
 });
 
