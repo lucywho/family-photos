@@ -5,24 +5,22 @@ import { APP_NAME } from '@/lib/constants';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
-import { Camera, Home, LayoutGrid, LibraryBig, LogOut } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { Camera, Home, LayoutGrid, LibraryBig, LogOut } from 'lucide-react';
 import { PendingUsersBadge } from '@/components/layout/PendingUsersBadge';
 
 export function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const username = session?.user?.name || 'Guest';
-  const [photoHash, setPhotoHash] = useState('');
-
   const showHomeButton = pathname !== '/';
+  const albumId = searchParams.get('albumId');
+  const [photoHash, setPhotoHash] = useState('');
+  const isAdmin = session?.user.role === 'ADMIN';
+  const username = session?.user?.name || 'Guest';
+  const dashboardPage = pathname.startsWith('/dashboard');
   const showAllAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
-  const albumId = searchParams.get('albumId');
-
-  const isAdmin = session?.user.role === 'ADMIN';
-  const dashboardPage = pathname.startsWith('/dashboard');
 
   // Get the photo hash from the current URL to preserve scroll position
   useEffect(() => {
@@ -41,8 +39,8 @@ export function Header() {
   };
 
   return (
-    <header className='bg-background text-primary py-4 px-6 border border-primary border-t-0 border-x-0'>
-      <div className='container mx-auto flex flex-col md:flex-row items-center justify-between'>
+    <header className='bg-background/90 text-primary py-4 px-6 border border-primary border-t-0 border-x-0 fixed top-0 z-50 w-full backdrop-filter backdrop-blur-md bg-opacity-10'>
+      <div className='container mx-auto flex flex-col md:flex-row items-center justify-between max-w-[1200px]'>
         <div className='flex md:flex-row items-center gap-4'>
           <Camera className='mx-auto text-primary h-9 w-9 md:h-12 md:w-12' />
           <div className='flex flex-col'>

@@ -7,7 +7,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <main>{children}</main>
+      <main className='pt-24 max-w-[1200px] mx-auto'>{children}</main>
     </>
   );
 }

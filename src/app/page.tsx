@@ -62,8 +62,8 @@ export default function WelcomePage() {
   };
 
   return (
-    <main className='min-h-screen bg-background p-4'>
-      <div className='max-w-[400px] lg:md:max-w-[1200px] mx-auto'>
+    <main className='min-h-screen bg-background p-4 '>
+      <div className='max-w-[400px] lg:max-w-[1000px] mx-auto'>
         {/* Header Section */}
         <section className='text-center pb-8'>
           <Camera className='mx-auto text-primary' size={48} />
