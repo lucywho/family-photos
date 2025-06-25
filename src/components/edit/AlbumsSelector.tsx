@@ -97,7 +97,7 @@ export function AlbumsSelector({
                 disabled={pending}
                 aria-label={`Add to album ${album.name}`}
               >
-                {album.name}
+                {album.name.toUpperCase()}
               </button>
             ))
         ) : (
