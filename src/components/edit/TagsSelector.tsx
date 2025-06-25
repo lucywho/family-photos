@@ -95,7 +95,7 @@ export function TagsSelector({
                 disabled={pending}
                 aria-label={`select Tag ${tag.name}`}
               >
-                {tag.name}
+                {tag.name.toUpperCase()}
               </button>
             ))
         ) : (
