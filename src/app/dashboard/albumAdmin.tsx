@@ -1,3 +1,6 @@
+'use client';
+
+import { useRef, useState, useTransition } from 'react';
 import { getAlbumsWithPhotoCount } from '@/lib/db';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Plus } from 'lucide-react';
@@ -12,20 +15,107 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { createAlbum, editAlbum, deleteAlbum } from '@/app/actions/admin';
+import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
 
-export default async function AlbumAdmin() {
-  const albums = await getAlbumsWithPhotoCount();
+export default function AlbumAdmin({
+  albums,
+}: {
+  albums: Awaited<ReturnType<typeof getAlbumsWithPhotoCount>>;
+}) {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState<number | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState<number | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [formError, setFormError] = useState<string | null>(null);
+  const createFormRef = useRef<HTMLFormElement>(null);
+  const renameFormRef = useRef<HTMLFormElement>(null);
+
+  // Create Album
+  async function handleCreate(formData: FormData) {
+    setFormError(null);
+    const result = await createAlbum(formData);
+    if (result.success) {
+      toast.success(result.message);
+      setCreateOpen(false);
+      createFormRef.current?.reset();
+    } else {
+      setFormError(result.message);
+    }
+  }
+
+  // Rename Album
+  async function handleRename(albumId: number, formData: FormData) {
+    setFormError(null);
+    const result = await editAlbum(albumId, formData);
+    if (result.success) {
+      toast.success(result.message);
+      setRenameOpen(null);
+      renameFormRef.current?.reset();
+    } else {
+      setFormError(result.message);
+    }
+  }
+
+  // Delete Album
+  function handleDelete(albumId: number) {
+    setFormError(null);
+    startTransition(async () => {
+      const result = await deleteAlbum(albumId);
+      if (result.success) {
+        toast.success(result.message);
+        setDeleteOpen(null);
+      } else {
+        setFormError(result.message);
+      }
+    });
+  }
 
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between mb-4'>
-        <Button variant='default' size='sm'>
-          <Plus className='h-4 w-4 mr-2' />
-          Add New Album
-        </Button>
+        <AlertDialog open={createOpen} onOpenChange={setCreateOpen}>
+          <AlertDialogTrigger asChild>
+            <Button variant='default' size='sm'>
+              <Plus className='h-4 w-4 mr-2' />
+              Add New Album
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Add New Album</AlertDialogTitle>
+              <AlertDialogDescription>
+                Enter a name for the new album (max 20 characters).
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <form
+              ref={createFormRef}
+              action={handleCreate}
+              className='flex flex-col gap-4 mt-2'
+            >
+              <input
+                name='name'
+                type='text'
+                maxLength={20}
+                required
+                className='border rounded px-2 py-1 text-sm'
+                placeholder='Album name'
+                autoFocus
+              />
+              {formError && (
+                <div className='text-destructive text-sm'>{formError}</div>
+              )}
+              <AlertDialogFooter>
+                <AlertDialogCancel type='button'>Cancel</AlertDialogCancel>
+                <Button type='submit'>Create</Button>
+              </AlertDialogFooter>
+            </form>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       <div className='rounded-md border divide-y divide-border'>
-        {albums.map((album) => (
+        {albums?.map((album) => (
           <div key={album.id} className='flex items-center justify-between p-4'>
             <div>
               <span className='font-medium'>{album.name}</span>
@@ -34,8 +124,12 @@ export default async function AlbumAdmin() {
               </span>
             </div>
             {album.name !== 'All Photos' && (
-              <div className='flex flex-row'>
-                <AlertDialog>
+              <div className='flex flex-row gap-2'>
+                {/* Delete Album */}
+                <AlertDialog
+                  open={deleteOpen === album.id}
+                  onOpenChange={(open) => setDeleteOpen(open ? album.id : null)}
+                >
                   <AlertDialogTrigger asChild>
                     <Button
                       variant='ghost'
@@ -56,16 +150,27 @@ export default async function AlbumAdmin() {
                         'All Photos' album.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
+                    {formError && (
+                      <div className='text-destructive text-sm'>
+                        {formError}
+                      </div>
+                    )}
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction /* onClick={handleDelete(album.id)} */>
-                        Delete
+                      <AlertDialogAction
+                        onClick={() => handleDelete(album.id)}
+                        disabled={isPending}
+                      >
+                        {isPending ? 'Deleting...' : 'Delete'}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-
-                <AlertDialog>
+                {/* Rename Album */}
+                <AlertDialog
+                  open={renameOpen === album.id}
+                  onOpenChange={(open) => setRenameOpen(open ? album.id : null)}
+                >
                   <AlertDialogTrigger asChild>
                     <Button
                       variant='ghost'
@@ -81,15 +186,37 @@ export default async function AlbumAdmin() {
                         Rename album: {album.name}?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to rename this album?
+                        Enter a new name for this album (max{' '}
+                        {MAX_ALBUM_NAME_LENGTH} characters).
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction /* onClick={handleEdit(album.id)} */>
-                        Rename
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
+                    <form
+                      ref={renameFormRef}
+                      action={(fd) => handleRename(album.id, fd)}
+                      className='flex flex-col gap-4 mt-2'
+                    >
+                      <input
+                        name='name'
+                        type='text'
+                        maxLength={MAX_ALBUM_NAME_LENGTH}
+                        required
+                        className='border rounded px-2 py-1 text-sm'
+                        placeholder='New album name'
+                        defaultValue={album.name}
+                        autoFocus
+                      />
+                      {formError && (
+                        <div className='text-destructive text-sm'>
+                          {formError}
+                        </div>
+                      )}
+                      <AlertDialogFooter>
+                        <AlertDialogCancel type='button'>
+                          Cancel
+                        </AlertDialogCancel>
+                        <Button type='submit'>Rename</Button>
+                      </AlertDialogFooter>
+                    </form>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>

@@ -117,33 +117,53 @@ const NameSchema = z.object({
 
 export async function createAlbum(formData: FormData) {
   const session = await requireAdmin();
-  if (!session) {
-    return { success: false, message: 'Unauthorized', errors: null };
-  }
+  if (!session) return { success: false, message: 'Unauthorized' };
 
-  const validatedFields = NameSchema.safeParse({ name: formData.get('name') });
-  if (!validatedFields.success) {
-    return {
-      success: false,
-      message: 'Invalid field.',
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
+  const name = formData.get('name');
+  const validatedFields = NameSchema.safeParse({ name });
+  if (!validatedFields.success)
+    return { success: false, message: validatedFields.error.errors[0].message };
 
-  try {
-    await prisma.album.create({
-      data: { name: validatedFields.data.name },
-    });
-    revalidatePath('/dashboard');
-    return { success: true, message: 'Album created successfully.' };
-  } catch (e) {
-    console.error(e);
-    return {
-      success: false,
-      message: 'Database error: Album name may already exist.',
-      errors: null,
-    };
-  }
+  // Check uniqueness
+  const exists = await prisma.album.findUnique({
+    where: { name: validatedFields.data.name },
+  });
+  if (exists) return { success: false, message: 'Album name already exists' };
+
+  await prisma.album.create({ data: { name: validatedFields.data.name } });
+  revalidatePath('/dashboard');
+  revalidatePath('/albums');
+  return { success: true, message: 'new album created' };
+}
+
+export async function editAlbum(albumId: number, formData: FormData) {
+  const session = await requireAdmin();
+  if (!session) return { success: false, message: 'Unauthorized' };
+
+  const name = formData.get('name');
+  const validatedFields = NameSchema.safeParse({ name });
+  if (!validatedFields.success)
+    return { success: false, message: validatedFields.error.errors[0].message };
+
+  // Prevent renaming 'All Photos'
+  const album = await prisma.album.findUnique({ where: { id: albumId } });
+  if (!album || album.name === 'All Photos')
+    return { success: false, message: 'Cannot rename this album' };
+
+  // Check uniqueness
+  const exists = await prisma.album.findUnique({
+    where: { name: validatedFields.data.name },
+  });
+  if (exists && exists.id !== albumId)
+    return { success: false, message: 'Album name already exists' };
+
+  await prisma.album.update({
+    where: { id: albumId },
+    data: { name: validatedFields.data.name },
+  });
+  revalidatePath('/dashboard');
+  revalidatePath('/albums');
+  return { success: true, message: 'Album renamed' };
 }
 
 export async function deleteAlbum(albumId: number) {
@@ -163,6 +183,7 @@ export async function deleteAlbum(albumId: number) {
 
     await prisma.album.delete({ where: { id: albumId } });
     revalidatePath('/dashboard');
+    revalidatePath('/albums');
     return { success: true, message: 'Album deleted successfully.' };
   } catch (e) {
     console.error(e);

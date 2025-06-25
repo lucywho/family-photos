@@ -10,7 +10,7 @@ export const PASSWORD_REQUIREMENTS =
 export const MAX_TITLE_LENGTH = 50;
 export const MAX_NOTES_LENGTH = 500;
 export const MAX_TAG_LENGTH = 20;
-export const MAX_ALBUM_NAME_LENGTH = 20;
+export const MAX_ALBUM_NAME_LENGTH = 30;
 
 // Date format
 export const DATE_FORMAT = 'dd/mm/yyyy';
