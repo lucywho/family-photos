@@ -1,23 +1,24 @@
 'use client';
 
+import * as z from 'zod';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
+import { useForm } from 'react-hook-form';
+import { AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
+  AlertDescription,
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+  Input,
+} from '@/components/ui';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address or password'),

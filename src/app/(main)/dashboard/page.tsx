@@ -1,13 +1,11 @@
 // src/app/dashboard/page.tsx
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+import { PageTitle } from '@/components/layout';
 import { authOptions } from '@/lib/auth-options';
-import TagAdmin from '@/components/dashboard/tagAdmin';
-import { PageTitle } from '@/components/layout/PageTitle';
-import UserAdmin from '@/components/dashboard/userAdmin';
-import AlbumAdmin from '@/components/dashboard/albumAdmin';
+import { AlbumAdmin, TagAdmin, UserAdmin } from '@/components/dashboard';
 import { getAlbumsWithPhotoCount, getTagsWithPhotoCount } from '@/lib/db';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);

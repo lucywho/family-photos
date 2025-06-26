@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { Button } from '@/components/ui';
 import { APP_NAME } from '@/lib/constants';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
+import { PendingUsersBadge } from '@/components/layout';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Camera, Home, LayoutGrid, LibraryBig, LogOut } from 'lucide-react';
-import { PendingUsersBadge } from '@/components/layout/PendingUsersBadge';
 
 export function Header() {
   const pathname = usePathname();

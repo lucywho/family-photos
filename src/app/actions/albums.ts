@@ -1,9 +1,9 @@
 'use server';
 
 import { prisma } from '@/lib/db';
+import { UserRole } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import { UserRole } from '@prisma/client';
 import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
 
 type AlbumActionState = {

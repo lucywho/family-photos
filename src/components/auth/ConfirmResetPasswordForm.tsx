@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { CardContent, CardFooter } from '@/components/ui/card';
-import { confirmPasswordReset } from '@/app/actions/auth';
 import { PASSWORD_REQUIREMENTS } from '@/lib/constants';
+import { confirmPasswordReset } from '@/app/actions/auth';
+import { Button, CardContent, CardFooter, Input } from '@/components/ui';
 
 interface ConfirmResetPasswordFormProps {
   token: string;

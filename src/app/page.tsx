@@ -1,22 +1,21 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Camera } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { continueAsGuest } from './actions/auth';
+import { signIn, signOut } from 'next-auth/react';
+import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
+import { LoginForm, RegistrationForm } from '@/components/auth';
 import {
+  Button,
   Card,
   CardHeader,
   CardFooter,
   CardDescription,
   CardContent,
-} from '@/components/ui/card';
-import { Camera } from 'lucide-react';
-import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
-import { LoginForm } from '@/components/auth/LoginForm';
-import { RegistrationForm } from '@/components/auth/RegistrationForm';
-import { signIn, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { continueAsGuest } from './actions/auth';
-import Link from 'next/link';
+} from '@/components/ui';
 
 export default function WelcomePage() {
   const router = useRouter();

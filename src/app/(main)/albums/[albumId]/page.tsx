@@ -1,17 +1,15 @@
 'use client';
 
-import React from 'react';
 import { AlertCircle } from 'lucide-react';
+import { PageTitle } from '@/components/layout';
 import { ITEMS_PER_PAGE } from '@/lib/constants';
-import { useEffect, useState, useRef } from 'react';
 import { AlbumProvider } from '@/contexts/AlbumContext';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { PageTitle } from '@/components/layout/PageTitle';
-import { PhotoGrid } from '@/components/photos/PhotoGrid';
+import React, { useEffect, useState, useRef } from 'react';
+import { Alert, AlertDescription } from '@/components/ui';
+import { PhotoGrid, PhotoSkeleton } from '@/components/photos';
 import { usePhotoPosition } from '@/lib/hooks/usePhotoPosition';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { PhotoSkeleton } from '@/components/photos/PhotoSkeleton';
 
 interface Photo {
   id: number;

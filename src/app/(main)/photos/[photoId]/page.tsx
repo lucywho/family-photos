@@ -1,20 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
 import { normalizePhoto } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { MAX_RETRIES } from '@/lib/constants';
-import { Button } from '@/components/ui/button';
 import { PhotoEditForm } from './PhotoEditForm';
+import React, { useState, useEffect } from 'react';
 import { createPhotoHandlers } from './photoHandlers';
-import { Card, CardContent } from '@/components/ui/card';
-import { PhotoInfo } from '@/components/photos/PhotoInfo';
+import { Button, Card, CardContent } from '@/components/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
 import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
-import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
+import { PhotoDisplay, PhotoInfo, PhotoNavigation } from '@/components/photos';
 
 import { Photo, PhotoPageProps } from '@/types/photo';
 interface Tag {

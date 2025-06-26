@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
+import { ConfirmResetPasswordForm } from '@/components/auth';
 import {
+  Button,
   Card,
   CardHeader,
   CardFooter,
   CardDescription,
-} from '@/components/ui/card';
-import { ConfirmResetPasswordForm } from '@/components/auth/ConfirmResetPasswordForm';
+} from '@/components/ui';
 
 export default function ConfirmResetPasswordPage({
   searchParams,

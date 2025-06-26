@@ -3,17 +3,18 @@
 import isEqual from 'lodash.isequal';
 import { formatDate } from '@/lib/utils';
 import { CancelAlert } from './CancelAlert';
-import { Button } from '@/components/ui/button';
+import { Button, Skeleton } from '@/components/ui';
 import { updatePhoto } from '@/app/actions/photos';
-import { Skeleton } from '@/components/ui/skeleton';
-import { DateInput } from '@/components/edit/DateInput';
-import { TitleInput } from '@/components/edit/TitleInput';
-import { NotesInput } from '@/components/edit/NotesInput';
 import { useState, useEffect, useActionState } from 'react';
-import { TagsSelector } from '@/components/edit/TagsSelector';
-import { AlbumsSelector } from '@/components/edit/AlbumsSelector';
 import { MAX_TAG_LENGTH, MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
-import { FamilyOnlyCheckbox } from '@/components/edit/FamilyOnlyCheckbox';
+import {
+  AlbumsSelector,
+  DateInput,
+  FamilyOnlyCheckbox,
+  NotesInput,
+  TagsSelector,
+  TitleInput,
+} from '@/components/edit';
 
 import type { PhotoEditResponse } from '@/lib/schemas/photo';
 interface Photo {

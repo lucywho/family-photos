@@ -1,10 +1,13 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { getTagsWithPhotoCount } from '@/lib/db';
-import { Button } from '@/components/ui/button';
+import { MAX_TAG_LENGTH } from '@/lib/constants';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import { useRef, useState, useTransition } from 'react';
+import { createTag, editTag, deleteTag } from '@/app/actions/admin';
 import {
+  Button,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -14,12 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
-import { createTag, editTag, deleteTag } from '@/app/actions/admin';
-import { MAX_TAG_LENGTH } from '@/lib/constants';
+} from '@/components/ui';
 
-export default function TagAdmin({
+export function TagAdmin({
   tags,
 }: {
   tags: Awaited<ReturnType<typeof getTagsWithPhotoCount>>;

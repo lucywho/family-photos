@@ -1,10 +1,12 @@
 'use client';
 
+import { toast } from 'sonner';
 import { useState, useTransition } from 'react';
 import { User, UserRole } from '@prisma/client';
-import { Button } from '@/components/ui/button';
 import { Edit, Save, Trash2 } from 'lucide-react';
+import { updateUser, deleteUser } from '@/app/actions/admin';
 import {
+  Button,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -14,9 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
-import { updateUser, deleteUser } from '@/app/actions/admin';
+} from '@/components/ui';
 
 interface UserManagementRowProps {
   user: User;

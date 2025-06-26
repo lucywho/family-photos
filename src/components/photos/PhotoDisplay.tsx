@@ -2,9 +2,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Button, Skeleton } from '@/components/ui';
 import { ImageIcon, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+
 import { Photo } from '@/types/photo';
 
 interface PhotoDisplayProps {

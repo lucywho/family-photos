@@ -1,11 +1,11 @@
 'use client';
 
-import { Card, CardHeader, CardDescription } from '@/components/ui/card';
-import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm';
+import { ResetPasswordForm } from '@/components/auth';
+import { Card, CardHeader, CardDescription } from '@/components/ui';
 
 export default function ResetPasswordPage() {
   return (
-    <main className='min-h-screen bg-[hsl(var(--background))] p-4'>
+    <main className='min-h-screen bg-background p-4'>
       <div className='max-w-[400px] mx-auto'>
         <Card className='md:mt-10'>
           <CardHeader>Reset Password</CardHeader>

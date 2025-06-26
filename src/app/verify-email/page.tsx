@@ -2,12 +2,17 @@
 
 import { APP_NAME } from '@/lib/constants';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { verifyEmail } from '@/app/actions/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardHeader, CardDescription } from '@/components/ui/card';
 import { AlertCircle, CheckCircle2, Camera, Loader2, Mail } from 'lucide-react';
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  Card,
+  CardHeader,
+  CardDescription,
+} from '@/components/ui';
 
 type VerificationState = 'verifying' | 'success' | 'expired' | 'error';
 
