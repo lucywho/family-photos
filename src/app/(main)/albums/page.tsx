@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useInView } from 'react-intersection-observer';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { AlbumGrid } from '@/components/albums/AlbumGrid';
-import { AlbumSkeleton } from '@/components/albums/AlbumSkeleton';
+import { useEffect, useState } from 'react';
 import { ALBUMS_PER_PAGE } from '@/lib/constants';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { Alert, AlertDescription } from '@/components/ui';
+import { AlbumGrid, AlbumSkeleton } from '@/components/albums';
 
 interface Album {
   id: string;

@@ -1,10 +1,12 @@
 'use client';
 
+import { toast } from 'sonner';
 import { useTransition } from 'react';
 import { User } from '@prisma/client';
-import { Button } from '@/components/ui/button';
 import { Check, Trash2 } from 'lucide-react';
+import { approveUser, deleteUser } from '@/app/actions/admin';
 import {
+  Button,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -14,9 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { approveUser, deleteUser } from '@/app/actions/admin';
-import { toast } from 'sonner';
+} from '@/components/ui';
 
 export default function UserApprovalRow({ user }: { user: User }) {
   const [isPending, startTransition] = useTransition();

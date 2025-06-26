@@ -1,6 +1,6 @@
-import { render as rtlRender } from '@testing-library/react';
-import { SessionProvider } from 'next-auth/react';
 import { UserRole } from '@prisma/client';
+import { SessionProvider } from 'next-auth/react';
+import { render as rtlRender } from '@testing-library/react';
 
 const adminEmail = `admin@${process.env.ADMIN_EMAIL_DOMAIN}`;
 

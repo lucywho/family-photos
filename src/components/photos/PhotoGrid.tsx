@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { RefObject } from 'react';
 import { ImageIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui';
 
 interface Photo {
   id: number;

@@ -1,7 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface PhotoNavigationProps {
   canNavigatePrevious: boolean;

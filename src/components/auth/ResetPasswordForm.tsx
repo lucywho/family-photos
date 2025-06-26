@@ -1,21 +1,22 @@
 'use client';
-import { useRouter } from 'next/navigation';
+
+import * as z from 'zod';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { resetPassword } from '@/app/actions/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
+  CardFooter,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { CardFooter } from '@/components/ui/card';
-import { resetPassword } from '@/app/actions/auth';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+  Input,
+} from '@/components/ui';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),

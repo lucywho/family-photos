@@ -1,7 +1,7 @@
 'use server';
 
-import { prisma } from '@/lib/db';
 import { hash } from 'bcryptjs';
+import { prisma } from '@/lib/db';
 import { UserRole } from '@prisma/client';
 import { sendVerificationEmail } from '@/lib/email';
 

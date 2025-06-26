@@ -1,9 +1,11 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { getAlbumsWithPhotoCount } from '@/lib/db';
-import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
+import { useRef, useState, useTransition } from 'react';
+import { createAlbum, editAlbum, deleteAlbum } from '@/app/actions/admin';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,12 +16,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
-import { createAlbum, editAlbum, deleteAlbum } from '@/app/actions/admin';
-import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
+  Button,
+} from '@/components/ui';
 
-export default function AlbumAdmin({
+export function AlbumAdmin({
   albums,
 }: {
   albums: Awaited<ReturnType<typeof getAlbumsWithPhotoCount>>;

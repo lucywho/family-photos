@@ -1,24 +1,25 @@
 'use client';
 
-import { useState, useTransition, useActionState } from 'react';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { register } from '@/app/actions/auth';
-import { Button } from '@/components/ui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState, useTransition, useActionState } from 'react';
 import {
+  Alert,
+  AlertDescription,
+  Button,
+  Checkbox,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+  Input,
+} from '@/components/ui';
 
 const formSchema = z.object({
   username: z
