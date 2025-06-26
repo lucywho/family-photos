@@ -73,7 +73,7 @@ export default function AlbumAdmin({
   }
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 min-h-vh'>
       <div className='flex items-center justify-between mb-4'>
         <AlertDialog open={createOpen} onOpenChange={setCreateOpen}>
           <AlertDialogTrigger asChild>

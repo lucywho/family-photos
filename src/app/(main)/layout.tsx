@@ -1,4 +1,5 @@
 'use client';
+import { HeaderWrapper } from '@/components/layout/HeaderWrapper';
 
 export default function MainLayout({
   children,
@@ -7,6 +8,7 @@ export default function MainLayout({
 }) {
   return (
     <>
+      <HeaderWrapper />
       <main className='pt-24 max-w-[1200px] mx-auto'>{children}</main>
     </>
   );

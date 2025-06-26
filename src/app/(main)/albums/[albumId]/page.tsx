@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useInView } from 'react-intersection-observer';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
-import { PhotoGrid } from '@/components/photos/PhotoGrid';
-import { PhotoSkeleton } from '@/components/photos/PhotoSkeleton';
-import { ITEMS_PER_PAGE } from '@/lib/constants';
-import { usePhotoPosition } from '@/lib/hooks/usePhotoPosition';
 import React from 'react';
+import { AlertCircle } from 'lucide-react';
+import { ITEMS_PER_PAGE } from '@/lib/constants';
+import { useEffect, useState, useRef } from 'react';
 import { AlbumProvider } from '@/contexts/AlbumContext';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { PageTitle } from '@/components/layout/PageTitle';
+import { PhotoGrid } from '@/components/photos/PhotoGrid';
+import { usePhotoPosition } from '@/lib/hooks/usePhotoPosition';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PhotoSkeleton } from '@/components/photos/PhotoSkeleton';
 
 interface Photo {
   id: number;
@@ -251,9 +252,12 @@ function GalleryView({ albumId }: { albumId: number }) {
   }
 
   const album = data?.pages[0]?.album ?? null;
+  const albumName = album ? album.name : '';
+  console.log('albumName: ', albumName);
 
   return (
     <AlbumProvider album={album}>
+      <PageTitle pageTitle={albumName} />
       <div className='container mx-auto p-4'>
         {s3Error && (
           <Alert variant='destructive' className='mb-4'>

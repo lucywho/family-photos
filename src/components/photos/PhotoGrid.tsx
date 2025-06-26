@@ -2,10 +2,10 @@
 'use client';
 
 import Link from 'next/link';
+import { RefObject } from 'react';
+import { ImageIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ImageIcon } from 'lucide-react';
-import { RefObject } from 'react';
 
 interface Photo {
   id: number;
