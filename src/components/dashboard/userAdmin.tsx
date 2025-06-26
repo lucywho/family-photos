@@ -22,7 +22,7 @@ export default async function UserAdmin({
 
   if (!users || users.length === 0) {
     return (
-      <div className='mt-4 rounded-lg border border-dashed p-8 text-center'>
+      <div className='min-h-screen mt-4 rounded-lg border border-dashed p-8 text-center'>
         <h3 className='text-lg font-semibold'>
           {showAllUsers ? 'No Users Found' : 'No New Approvals'}
         </h3>
@@ -36,15 +36,17 @@ export default async function UserAdmin({
   }
 
   return (
-    <div className='rounded-md border'>
-      <div className='divide-y divide-border'>
-        {users.map((user) =>
-          showAllUsers ? (
-            <UserManagementRow key={user.id} user={user} />
-          ) : (
-            <UserApprovalRow key={user.id} user={user} />
-          )
-        )}
+    <div className='min-h-screen'>
+      <div className='rounded-md border'>
+        <div className='divide-y divide-border'>
+          {users.map((user) =>
+            showAllUsers ? (
+              <UserManagementRow key={user.id} user={user} />
+            ) : (
+              <UserApprovalRow key={user.id} user={user} />
+            )
+          )}
+        </div>
       </div>
     </div>
   );

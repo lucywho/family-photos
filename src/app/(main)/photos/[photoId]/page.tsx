@@ -8,15 +8,15 @@ import { useSession } from 'next-auth/react';
 import { MAX_RETRIES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { PhotoEditForm } from './PhotoEditForm';
-import { Photo, PhotoPageProps } from '@/types/photo';
+import { createPhotoHandlers } from './photoHandlers';
 import { Card, CardContent } from '@/components/ui/card';
 import { PhotoInfo } from '@/components/photos/PhotoInfo';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PhotoDisplay } from '@/components/photos/PhotoDisplay';
 import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
 import { PhotoNavigation } from '@/components/photos/PhotoNavigation';
-import { createPhotoHandlers } from './photoHandlers';
 
+import { Photo, PhotoPageProps } from '@/types/photo';
 interface Tag {
   id: number;
   name: string;
