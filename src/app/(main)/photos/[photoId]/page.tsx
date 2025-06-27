@@ -3,13 +3,17 @@
 import { normalizePhoto } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { MAX_RETRIES } from '@/lib/constants';
-import { PhotoEditForm } from './PhotoEditForm';
 import React, { useState, useEffect } from 'react';
 import { createPhotoHandlers } from './photoHandlers';
 import { Button, Card, CardContent } from '@/components/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
-import { PhotoDisplay, PhotoInfo, PhotoNavigation } from '@/components/photos';
+import {
+  PhotoDisplay,
+  PhotoInfo,
+  PhotoNavigation,
+  PhotoEditForm,
+} from '@/components/photos';
 
 import { Photo, PhotoPageProps } from '@/types/photo';
 interface Tag {
