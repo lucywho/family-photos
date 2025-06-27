@@ -251,7 +251,6 @@ function GalleryView({ albumId }: { albumId: number }) {
 
   const album = data?.pages[0]?.album ?? null;
   const albumName = album ? album.name : '';
-  console.log('albumName: ', albumName);
 
   return (
     <AlbumProvider album={album}>

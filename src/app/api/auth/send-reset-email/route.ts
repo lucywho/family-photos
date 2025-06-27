@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createTransport } from 'nodemailer';
 import { prisma } from '@/lib/db';
 import { randomBytes } from 'crypto';
+import { z } from 'zod';
 
 const transporter = createTransport({
   host: process.env.SMTP_HOST,
@@ -13,9 +14,23 @@ const transporter = createTransport({
   },
 });
 
+const schema = z.object({
+  email: z.string().email(),
+});
+
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const body = await request.json();
+    const result = schema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: 'Email is missing or not in correct format' },
+        { status: 400 }
+      );
+    }
+
+    const { email } = result.data;
 
     const user = await prisma.user.findUnique({
       where: { email },
