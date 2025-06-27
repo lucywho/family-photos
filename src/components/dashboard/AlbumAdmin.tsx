@@ -148,7 +148,7 @@ export function AlbumAdmin({
                       <AlertDialogDescription>
                         Are you sure you want to delete this album? Deleting an
                         album cannot be undone. Your photos will remain in the
-                        'All Photos' album.
+                        &quot;All Photos&quot; album.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     {formError && (

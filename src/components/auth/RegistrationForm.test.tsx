@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRouter } from 'next/navigation';
-import { useActionState, useTransition } from 'react';
-import { RegistrationForm } from '@/components/auth/RegistrationForm';
+import userEvent from '@testing-library/user-event';
+import { RegistrationForm } from '@/components/auth';
+import { render, screen } from '@testing-library/react';
+import React, { useActionState, useTransition } from 'react';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

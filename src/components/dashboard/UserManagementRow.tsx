@@ -209,7 +209,8 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
                     Update user information now?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to update this user's information?
+                    Are you sure you want to update this user&apos;s
+                    information?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
