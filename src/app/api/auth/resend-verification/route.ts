@@ -1,15 +1,22 @@
-import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { NextResponse } from 'next/server';
 import { sendVerificationEmail } from '@/lib/email';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email(),
+});
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const body = await request.json();
+    const result = schema.safeParse(body);
 
-    if (!email) {
+    if (!result.success) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
+    const { email } = result.data;
     // Find the user
     const user = await prisma.user.findUnique({
       where: { email },
