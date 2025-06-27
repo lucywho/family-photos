@@ -1,3 +1,4 @@
+import React from 'react';
 import { ConfirmResetPasswordForm } from '@/components/auth';
 import {
   Button,
@@ -10,9 +11,11 @@ import {
 export default function ConfirmResetPasswordPage({
   searchParams,
 }: {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }) {
-  if (!searchParams.token) {
+  const search = React.use(searchParams);
+
+  if (!search.token) {
     return (
       <main className='min-h-screen bg-background p-4'>
         <div className='max-w-[400px] mx-auto'>
@@ -42,7 +45,7 @@ export default function ConfirmResetPasswordPage({
             <h1 className='text-2xl font-bold'>Set New Password</h1>
             <CardDescription>Enter your new password below.</CardDescription>
           </CardHeader>
-          <ConfirmResetPasswordForm token={searchParams.token} />
+          <ConfirmResetPasswordForm token={search.token} />
         </Card>
       </div>
     </main>
