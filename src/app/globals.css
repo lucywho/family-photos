@@ -44,6 +44,8 @@ html {
   input:focus,
   textarea:focus {
     border-color: hsl(var(--focus-ring));
+    color: hsl(var(--text-text));
+    caret-color: hsl(var(--text-text));
     outline: none;
     box-shadow: 0 0 0 2px hsl(var(--focus-ring) / 0.5);
   }

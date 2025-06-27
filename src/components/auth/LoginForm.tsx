@@ -124,6 +124,7 @@ export function LoginForm() {
                     data-testid='show-password-button'
                     className='absolute right-0 top-0 h-full mr-4 py-2 text-sm text-primary'
                     onClick={() => setShowPassword((prev) => !prev)}
+                    onMouseDown={(e) => e.preventDefault()}
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>

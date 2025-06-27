@@ -1,3 +1,4 @@
+import '@/lib/env';
 import './globals.css';
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
