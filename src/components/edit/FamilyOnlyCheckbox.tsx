@@ -1,4 +1,5 @@
 import React from 'react';
+import { Checkbox } from '@/components/ui';
 
 interface FamilyOnlyCheckboxProps {
   value: boolean;
@@ -13,14 +14,13 @@ export function FamilyOnlyCheckbox({
 }: FamilyOnlyCheckboxProps) {
   return (
     <div className='flex items-center gap-2'>
-      <input
+      <Checkbox
         id='familyOnly'
         name='familyOnly'
-        type='checkbox'
         checked={value}
-        onChange={(e) => onChange(e.target.checked)}
+        onCheckedChange={(v) => onChange(!!v)}
         disabled={disabled}
-        className='w-6 h-6'
+        className='size-6'
       />
       <label htmlFor='familyOnly' className='text-sm'>
         Family only
