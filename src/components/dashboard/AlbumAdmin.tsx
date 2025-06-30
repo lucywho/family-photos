@@ -1,8 +1,9 @@
 'use client';
 
 import { toast } from 'sonner';
-import { getAlbumsWithPhotoCount } from '@/lib/db';
+import { SubmitButton } from './SubmitButton';
 import { Edit, Trash2, Plus } from 'lucide-react';
+import { getAlbumsWithPhotoCount } from '@/lib/db';
 import { MAX_ALBUM_NAME_LENGTH } from '@/lib/constants';
 import { useRef, useState, useTransition } from 'react';
 import { createAlbum, editAlbum, deleteAlbum } from '@/app/actions/admin';
@@ -17,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   Button,
+  Input,
 } from '@/components/ui';
 
 export function AlbumAdmin({
@@ -95,7 +97,7 @@ export function AlbumAdmin({
               action={handleCreate}
               className='flex flex-col gap-4 mt-2'
             >
-              <input
+              <Input
                 name='name'
                 type='text'
                 maxLength={MAX_ALBUM_NAME_LENGTH}
@@ -109,7 +111,7 @@ export function AlbumAdmin({
               )}
               <AlertDialogFooter>
                 <AlertDialogCancel type='button'>Cancel</AlertDialogCancel>
-                <Button type='submit'>Create</Button>
+                <SubmitButton>Create</SubmitButton>
               </AlertDialogFooter>
             </form>
           </AlertDialogContent>
@@ -196,7 +198,7 @@ export function AlbumAdmin({
                       action={(fd) => handleRename(album.id, fd)}
                       className='flex flex-col gap-4 mt-2'
                     >
-                      <input
+                      <Input
                         name='name'
                         type='text'
                         maxLength={MAX_ALBUM_NAME_LENGTH}
@@ -215,7 +217,7 @@ export function AlbumAdmin({
                         <AlertDialogCancel type='button'>
                           Cancel
                         </AlertDialogCancel>
-                        <Button type='submit'>Rename</Button>
+                        <SubmitButton>Rename</SubmitButton>
                       </AlertDialogFooter>
                     </form>
                   </AlertDialogContent>

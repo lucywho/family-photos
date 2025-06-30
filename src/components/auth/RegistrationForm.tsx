@@ -2,11 +2,13 @@
 
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
+import { useFormStatus } from 'react-dom';
 import { AlertCircle } from 'lucide-react';
+import { APP_NAME } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { register } from '@/app/actions/auth';
+import { useState, useActionState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useTransition, useActionState } from 'react';
 import {
   Alert,
   AlertDescription,
@@ -47,7 +49,6 @@ const initialState = {
 
 export function RegistrationForm() {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState(register, initialState);
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<FormData>({
@@ -59,18 +60,6 @@ export function RegistrationForm() {
       privacyAgreement: false,
     },
   });
-
-  const onSubmit = async (data: FormData) => {
-    const formData = new FormData();
-    formData.append('username', data.username);
-    formData.append('email', data.email);
-    formData.append('password', data.password);
-    formData.append('privacyAgreement', data.privacyAgreement.toString());
-
-    startTransition(async () => {
-      await formAction(formData);
-    });
-  };
 
   if (state.success) {
     return (
@@ -97,9 +86,12 @@ export function RegistrationForm() {
     <Form {...form}>
       <form
         data-testid='registration-form'
-        onSubmit={form.handleSubmit(onSubmit)}
+        action={(formData) => {
+          form.handleSubmit(() => {
+            formAction(formData);
+          })();
+        }}
         className='space-y-4 p-6'
-        method='POST'
       >
         {state.error && (
           <Alert variant='destructive'>
@@ -213,31 +205,32 @@ export function RegistrationForm() {
                 >
                   I agree to the storage and processing of my personal data
                   (username, email address, and password) for the purpose of
-                  accessing the Family Photos app. My data will be used solely
-                  for authentication and communication purposes. I understand
-                  that my email address will be used for account verification
-                  and password reset requests.
+                  accessing the {APP_NAME} app. My data will be used solely for
+                  authentication and communication purposes. I understand that
+                  my email address will be used for account verification and
+                  password reset requests.
                 </div>
               </div>
             </FormItem>
           )}
         />
 
-        <SubmitButton isPending={isPending} />
+        <SubmitButton />
       </form>
     </Form>
   );
 }
 
-function SubmitButton({ isPending }: { isPending: boolean }) {
+function SubmitButton() {
+  const { pending } = useFormStatus();
   return (
     <Button
       data-testid='submit-registration-button'
       type='submit'
       className='w-full'
-      disabled={isPending}
+      disabled={pending}
     >
-      {isPending ? 'Registering...' : 'Register'}
+      {pending ? 'Registering...' : 'Register'}
     </Button>
   );
 }
