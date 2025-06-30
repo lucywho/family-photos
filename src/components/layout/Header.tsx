@@ -57,87 +57,88 @@ export function Header() {
           <div className='px-3 py-1 rounded-full bg-primary text-text text-sm font-medium'>
             {username}
           </div>
+          <nav aria-label='Main navigation' className='flex flex-row'>
+            {isAdmin && !dashboardPage && (
+              <Button
+                variant='ghost'
+                size='sm'
+                asChild
+                className='text-text hover:text-primary hover:bg-secondary relative'
+              >
+                <Link href='/dashboard'>
+                  <LayoutGrid className='h-4 w-4 md:mr-2' />
+                  <span className='hidden md:inline'>Dashboard</span>
+                  <PendingUsersBadge />
+                </Link>
+              </Button>
+            )}
 
-          {isAdmin && !dashboardPage && (
-            <Button
-              variant='ghost'
-              size='sm'
-              asChild
-              className='text-text hover:text-primary hover:bg-secondary relative'
-            >
-              <Link href='/dashboard'>
-                <LayoutGrid className='h-4 w-4 md:mr-2' />
-                <span className='hidden md:inline'>Dashboard</span>
-                <PendingUsersBadge />
-              </Link>
-            </Button>
-          )}
+            {isAdmin && dashboardPage && (
+              <Button
+                variant='ghost'
+                size='sm'
+                asChild
+                className='text-text hover:text-primary hover:bg-secondary'
+              >
+                <Link href='/albums'>
+                  <LibraryBig className='h-4 w-4 md:mr-2' />
+                  <span className='hidden md:inline'>Albums</span>
+                </Link>
+              </Button>
+            )}
 
-          {isAdmin && dashboardPage && (
-            <Button
-              variant='ghost'
-              size='sm'
-              asChild
-              className='text-text hover:text-primary hover:bg-secondary'
-            >
-              <Link href='/albums'>
-                <LibraryBig className='h-4 w-4 md:mr-2' />
-                <span className='hidden md:inline'>Albums</span>
-              </Link>
-            </Button>
-          )}
+            {showHomeButton && (
+              <Button
+                variant='ghost'
+                size='sm'
+                asChild
+                className='text-text hover:text-primary hover:bg-secondary'
+              >
+                <Link href='/'>
+                  <Home className='h-4 w-4 md:mr-2' />
+                  <span className='hidden md:inline'>Home</span>
+                </Link>
+              </Button>
+            )}
+            {showAllAlbumsButton && (
+              <Button
+                variant='ghost'
+                size='sm'
+                asChild
+                className='text-text hover:text-primary hover:bg-secondary'
+              >
+                <Link href='/albums'>
+                  <LibraryBig className='h-4 w-4 md:mr-2' />
+                  <span className='hidden md:inline'>All albums</span>
+                </Link>
+              </Button>
+            )}
+            {showBackToAlbumButton && albumId && (
+              <Button
+                variant='ghost'
+                size='sm'
+                asChild
+                className='text-text hover:text-primary hover:bg-secondary'
+              >
+                <Link href={`/albums/${albumId}${photoHash}`}>
+                  <LibraryBig className='h-4 w-4 md:mr-2' />
+                  <span className='hidden md:inline'>Back to album</span>
+                </Link>
+              </Button>
+            )}
 
-          {showHomeButton && (
-            <Button
-              variant='ghost'
-              size='sm'
-              asChild
-              className='text-text hover:text-primary hover:bg-secondary'
-            >
-              <Link href='/'>
-                <Home className='h-4 w-4 md:mr-2' />
-                <span className='hidden md:inline'>Home</span>
-              </Link>
-            </Button>
-          )}
-          {showAllAlbumsButton && (
-            <Button
-              variant='ghost'
-              size='sm'
-              asChild
-              className='text-text hover:text-primary hover:bg-secondary'
-            >
-              <Link href='/albums'>
-                <LibraryBig className='h-4 w-4 md:mr-2' />
-                <span className='hidden md:inline'>All albums</span>
-              </Link>
-            </Button>
-          )}
-          {showBackToAlbumButton && albumId && (
-            <Button
-              variant='ghost'
-              size='sm'
-              asChild
-              className='text-text hover:text-primary hover:bg-secondary'
-            >
-              <Link href={`/albums/${albumId}${photoHash}`}>
-                <LibraryBig className='h-4 w-4 md:mr-2' />
-                <span className='hidden md:inline'>Back to album</span>
-              </Link>
-            </Button>
-          )}
-
-          {session && (
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={handleLogout}
-              className='text-text hover:text-primary hover:bg-secondary'
-            >
-              <LogOut className='h-4 w-4 md:mr-2' />
-              <span className='hidden md:inline'>Log out</span>
-            </Button>
-          )}
+            {session && (
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={handleLogout}
+                className='text-text hover:text-primary hover:bg-secondary'
+              >
+                <LogOut className='h-4 w-4 md:mr-2' />
+                <span className='hidden md:inline'>Log out</span>
+              </Button>
+            )}
+          </nav>
         </div>
       </div>
     </header>

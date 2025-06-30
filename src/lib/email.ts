@@ -1,6 +1,7 @@
-import { createTransport } from 'nodemailer';
 import { prisma } from '@/lib/db';
 import { randomBytes } from 'crypto';
+import { APP_NAME } from './constants';
+import { createTransport } from 'nodemailer';
 
 const transporter = createTransport({
   host: process.env.SMTP_HOST,
@@ -48,9 +49,9 @@ export async function sendVerificationEmail({
   await transporter.sendMail({
     from: process.env.SMTP_FROM,
     to: email,
-    subject: 'Family Photos: please verify your email address',
+    subject: `${APP_NAME || 'Family Photos'}: please verify your email address`,
     html: `
-      <h1>Welcome to ${process.env.APP_NAME || 'Family Photos'}!</h1>
+      <h1>Welcome to ${APP_NAME || 'Family Photos'}!</h1>
       <p>Hi ${username},</p>
       <p>Please verify your email address by clicking the link below:</p>
       <p><a href="${verificationUrl}">Verify Email Address</a></p>

@@ -25,7 +25,7 @@ export function AlbumGrid({ albums }: AlbumGridProps) {
           {album.thumbnailUrl ? (
             <img
               src={album.thumbnailUrl}
-              alt={album.name}
+              alt=''
               className='h-full w-full object-cover transition-transform group-hover:scale-105'
               onError={(e) => {
                 // Replace the img element with the default icon on error

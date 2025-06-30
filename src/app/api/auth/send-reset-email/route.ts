@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
-import { createTransport } from 'nodemailer';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { randomBytes } from 'crypto';
-import { z } from 'zod';
+import { APP_NAME } from '@/lib/constants';
+import { NextResponse } from 'next/server';
+import { createTransport } from 'nodemailer';
 
 const transporter = createTransport({
   host: process.env.SMTP_HOST,
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
-      subject: 'Family Photos: Reset your password',
+      subject: `${APP_NAME}: Reset your password`,
       html: `
         <p>You requested a password reset.</p>
         <p>Click <a href="${resetUrl}">here</a> to reset your password.</p>

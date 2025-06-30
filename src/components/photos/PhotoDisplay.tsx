@@ -44,7 +44,7 @@ export function PhotoDisplay({
       {!imageError ? (
         <img
           src={photo.url}
-          alt={photo.title || 'Photo'}
+          alt={photo.notes || 'this photo has no description yet'}
           className={`object-cover w-full h-full ${
             isLoading ? 'opacity-0' : 'opacity-100'
           } transition-opacity duration-300`}
