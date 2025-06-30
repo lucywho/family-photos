@@ -135,7 +135,7 @@ export function AlbumAdmin({
                     <Button
                       variant='ghost'
                       size='icon'
-                      aria-label='Delete Album'
+                      aria-label={`Delete ${album.name} Album`}
                     >
                       <Trash2 className='h-4 w-4 text-destructive' />
                     </Button>
@@ -176,7 +176,7 @@ export function AlbumAdmin({
                     <Button
                       variant='ghost'
                       size='icon'
-                      aria-label='Rename Album'
+                      aria-label={`Rename ${album.name} Album`}
                     >
                       <Edit className='h-4 w-4 text-text' />
                     </Button>

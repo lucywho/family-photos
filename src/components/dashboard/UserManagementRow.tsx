@@ -149,7 +149,6 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
                 <Button
                   variant='ghost'
                   size='icon'
-                  aria-label='Cancel Edit'
                   onClick={handleCancel}
                   disabled={isPending}
                 >
@@ -160,7 +159,7 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
               <Button
                 variant='ghost'
                 size='icon'
-                aria-label='Edit User'
+                aria-label={`Edit ${user.username}`}
                 onClick={handleEdit}
                 disabled={isPending}
               >
@@ -175,7 +174,7 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
                 <Button
                   variant='ghost'
                   size='icon'
-                  aria-label='Delete User'
+                  aria-label={`Delete ${user.username}`}
                   onClick={handleDelete}
                   disabled={isPending}
                 >

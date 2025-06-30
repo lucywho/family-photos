@@ -26,8 +26,13 @@ export function PendingUsersBadge() {
   }
 
   return (
-    <div className='absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-semibold'>
-      {pendingCount > 99 ? '99+' : pendingCount}
+    <div className='badge-container'>
+      <div className='absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-semibold'>
+        {pendingCount > 99 ? '99+' : pendingCount}
+      </div>
+      <span aria-live='polite' className='sr-only'>
+        {pendingCount} new users pending approval
+      </span>
     </div>
   );
 }
