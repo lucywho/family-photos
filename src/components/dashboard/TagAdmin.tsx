@@ -1,8 +1,9 @@
 'use client';
 
 import { toast } from 'sonner';
-import { getTagsWithPhotoCount } from '@/lib/db';
+import { SubmitButton } from './SubmitButton';
 import { MAX_TAG_LENGTH } from '@/lib/constants';
+import { getTagsWithPhotoCount } from '@/lib/db';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import { useRef, useState, useTransition } from 'react';
 import { createTag, editTag, deleteTag } from '@/app/actions/admin';
@@ -17,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Input,
 } from '@/components/ui';
 
 export function TagAdmin({
@@ -91,7 +93,7 @@ export function TagAdmin({
               action={handleCreate}
               className='flex flex-col gap-4 mt-2'
             >
-              <input
+              <Input
                 name='name'
                 type='text'
                 maxLength={MAX_TAG_LENGTH}
@@ -105,7 +107,7 @@ export function TagAdmin({
               )}
               <AlertDialogFooter>
                 <AlertDialogCancel type='button'>Cancel</AlertDialogCancel>
-                <Button type='submit'>Create</Button>
+                <SubmitButton>Create</SubmitButton>
               </AlertDialogFooter>
             </form>
           </AlertDialogContent>
@@ -184,7 +186,7 @@ export function TagAdmin({
                     action={(fd) => handleEdit(tag.id, fd)}
                     className='flex flex-col gap-4 mt-2'
                   >
-                    <input
+                    <Input
                       name='name'
                       type='text'
                       maxLength={MAX_TAG_LENGTH}
@@ -203,7 +205,7 @@ export function TagAdmin({
                       <AlertDialogCancel type='button'>
                         Cancel
                       </AlertDialogCancel>
-                      <Button type='submit'>Rename</Button>
+                      <SubmitButton>Rename</SubmitButton>
                     </AlertDialogFooter>
                   </form>
                 </AlertDialogContent>
