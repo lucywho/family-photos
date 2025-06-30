@@ -36,15 +36,33 @@ export async function UserAdmin({ showAllUsers = false }: UserAdminProps) {
   return (
     <div className='min-h-screen'>
       <div className='rounded-md border'>
-        <div className='divide-y divide-border'>
-          {users.map((user) =>
-            showAllUsers ? (
-              <UserManagementRow key={user.id} user={user} />
-            ) : (
-              <UserApprovalRow key={user.id} user={user} />
-            )
-          )}
-        </div>
+        <table className='w-full'>
+          <thead className='border-b hidden md:table-header-group'>
+            <tr>
+              <th className='p-4 text-left text-sm font-medium text-muted-foreground'>
+                Username
+              </th>
+              <th className='p-4 text-left text-sm font-medium text-muted-foreground'>
+                Email
+              </th>
+              <th className='p-4 text-left text-sm font-medium text-muted-foreground'>
+                Role
+              </th>
+              <th className='p-4 text-right text-sm font-medium text-muted-foreground'>
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-border md:divide-y-0'>
+            {users.map((user) =>
+              showAllUsers ? (
+                <UserManagementRow key={user.id} user={user} />
+              ) : (
+                <UserApprovalRow key={user.id} user={user} />
+              )
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
