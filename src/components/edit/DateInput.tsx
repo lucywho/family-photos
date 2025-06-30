@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 
 interface DateInputProps {
   value: string;
@@ -24,7 +24,7 @@ export function DateInput({
         Date
       </label>
       <div className='flex gap-2 items-center'>
-        <input
+        <Input
           id='date'
           name='date'
           type='text'

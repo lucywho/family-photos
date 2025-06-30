@@ -16,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Input,
 } from '@/components/ui';
 
 interface UserManagementRowProps {
@@ -89,7 +90,7 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
       >
         <div className='text-right md:text-left'>
           {isEditing ? (
-            <input
+            <Input
               name='username'
               value={form.username}
               onChange={handleChange}
@@ -109,7 +110,7 @@ export default function UserManagementRow({ user }: UserManagementRowProps) {
       >
         <div className='text-right md:text-left'>
           {isEditing ? (
-            <input
+            <Input
               name='email'
               type='email'
               value={form.email}

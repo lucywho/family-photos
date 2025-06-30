@@ -5,20 +5,20 @@
 @layer base {
   :root {
     /* Color scheme */
-    --background: 210 13% 16%; /* #212a31 */
-    --background-secondary: 210 13% 22%; /* #2e3944 */
-    --primary: 197 70% 35%; /* #1b7498 */
-    --primary-hover: 199 68% 20%; /* #0f3d52 */
-    --secondary: 188 11% 86%; /* #d8dfe0 */
-    --text: 130 7% 98%; /* #f9faf9 */
-    --destructive: 4 99% 66%; /* #FE5F55 */
-    --success: 101 78% 64%; /* #89EB5C */
-    --warning: 13 97% 66%; /* #FC7753 */
+    --background: 210 13% 16%; /* #212a31 dark grey*/
+    --background-secondary: 210 13% 22%; /* #2e3944 mid grey*/
+    --primary: 197 70% 35%; /* #1b7498 teal*/
+    --primary-hover: 199 68% 20%; /* #0f3d52 dark teal*/
+    --secondary: 188 11% 86%; /* #d8dfe0 light blue grey*/
+    --text: 130 7% 98%; /* #f9faf9 smoky white */
+    --destructive: 4 99% 66%; /* #FE5F55 light red */
+    --success: 101 78% 64%; /* #89EB5C lime green */
+    --warning: 13 97% 66%; /* #FC7753 light orange */
 
     /* Semantic colors */
     --card-background: var(--background);
     --card-border: var(--background-secondary);
-    --input-background: var(--background-secondary);
+    --input-background: var(--background);
     --input-border: var(--background-secondary);
     --input-text: var(--background);
     --input-placeholder: var(--secondary);
@@ -37,15 +37,14 @@ html {
 
   input,
   textarea {
-    color: hsl(var(--input-text));
     caret-color: hsl(var(--input-text));
   }
 
   input:focus,
   textarea:focus {
     border-color: hsl(var(--focus-ring));
-    color: hsl(var(--text-text));
-    caret-color: hsl(var(--text-text));
+    color: hsl(var(--text));
+    caret-color: hsl(var(--background));
     outline: none;
     box-shadow: 0 0 0 2px hsl(var(--focus-ring) / 0.5);
   }
