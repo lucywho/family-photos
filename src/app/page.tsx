@@ -94,7 +94,7 @@ export default function WelcomePage() {
                 <span>Create an Account</span>
               </CardHeader>
               <CardDescription className='px-6 pb-4 min-h-[60px]'>
-                Join the Family Photos app to view and manage family photos.
+                Join the {APP_NAME} app to view and manage family photos.
               </CardDescription>
               {!isRegisterExpanded && (
                 <div className='px-6 pb-4'>

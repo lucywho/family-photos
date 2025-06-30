@@ -1,4 +1,4 @@
-export const APP_NAME = 'Family Photos';
+export const APP_NAME = 'Toman Family Photos';
 export const APP_DESCRIPTION = 'View and manage your family photos';
 
 // Auth constants
