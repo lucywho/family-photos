@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
+'use client';
 import Link from 'next/link';
+import { useState } from 'react';
 import { ImageIcon } from 'lucide-react';
 
 interface Album {
@@ -14,6 +16,7 @@ interface AlbumGridProps {
 }
 
 export function AlbumGrid({ albums }: AlbumGridProps) {
+  const [imageError, setImageError] = useState(false);
   return (
     <>
       {albums.map((album) => (
@@ -22,28 +25,12 @@ export function AlbumGrid({ albums }: AlbumGridProps) {
           href={`/albums/${album.id}`}
           className='group relative aspect-square overflow-hidden rounded-lg bg-muted transition-colors hover:bg-muted/80'
         >
-          {album.thumbnailUrl ? (
+          {album.thumbnailUrl && !imageError ? (
             <img
               src={album.thumbnailUrl}
               alt=''
               className='h-full w-full object-cover transition-transform group-hover:scale-105'
-              onError={(e) => {
-                // Replace the img element with the default icon on error
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent) {
-                  const iconContainer = document.createElement('div');
-                  iconContainer.className =
-                    'flex h-full w-full items-center justify-center bg-muted';
-                  // Create a new div to hold the icon
-                  const iconWrapper = document.createElement('div');
-                  iconWrapper.innerHTML =
-                    '<svg class="h-12 w-12 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
-                  iconContainer.appendChild(iconWrapper);
-                  parent.appendChild(iconContainer);
-                }
-              }}
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className='flex h-full w-full items-center justify-center bg-muted'>
