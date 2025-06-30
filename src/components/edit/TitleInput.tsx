@@ -1,4 +1,5 @@
 import React from 'react';
+import { Input } from '@/components/ui';
 import { MAX_TITLE_LENGTH } from '@/lib/constants';
 
 interface TitleInputProps {
@@ -21,7 +22,7 @@ export function TitleInput({
       <label htmlFor='title' className='block font-medium mb-1'>
         Title
       </label>
-      <input
+      <Input
         id='title'
         name='title'
         type='text'

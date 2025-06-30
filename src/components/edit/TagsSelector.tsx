@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui';
 import { X } from 'lucide-react';
+import { Button, Input } from '@/components/ui';
 
 interface Tag {
   id: number;
@@ -60,7 +60,7 @@ export function TagsSelector({
         )}
       </div>
       <div className='flex gap-2 mb-2'>
-        <input
+        <Input
           type='text'
           value={inputValue}
           onChange={(e) => onInputChange(e.target.value)}
