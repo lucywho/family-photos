@@ -127,7 +127,11 @@ export function TagAdmin({
                 onOpenChange={(open) => setDeleteOpen(open ? tag.id : null)}
               >
                 <AlertDialogTrigger asChild>
-                  <Button variant='ghost' size='icon' aria-label='Delete Tag'>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label={`Delete ${tag.name} Tag`}
+                  >
                     <Trash2 className='h-4 w-4 text-destructive' />
                   </Button>
                 </AlertDialogTrigger>
@@ -159,7 +163,11 @@ export function TagAdmin({
                 onOpenChange={(open) => setEditOpen(open ? tag.id : null)}
               >
                 <AlertDialogTrigger asChild>
-                  <Button variant='ghost' size='icon' aria-label='Edit Tag'>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label={`Edit ${tag.name} tag`}
+                  >
                     <Edit className='h-4 w-4 text-text' />
                   </Button>
                 </AlertDialogTrigger>

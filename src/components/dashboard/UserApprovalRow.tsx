@@ -70,7 +70,11 @@ export default function UserApprovalRow({ user }: { user: User }) {
         {!isDefaultGuest && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='ghost' size='icon' aria-label='Approve User'>
+              <Button
+                variant='ghost'
+                size='icon'
+                aria-label={`Approve ${user.username}`}
+              >
                 <Check className='h-4 w-4 md:h-5 md:w-5 text-success' />
               </Button>
             </AlertDialogTrigger>
@@ -95,7 +99,11 @@ export default function UserApprovalRow({ user }: { user: User }) {
           <>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant='ghost' size='icon' aria-label='Delete User'>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  aria-label={`Delete ${user.username}`}
+                >
                   <Trash2 className='h-4 w-4 md:h-5 md:w-5 text-warning' />
                 </Button>
               </AlertDialogTrigger>

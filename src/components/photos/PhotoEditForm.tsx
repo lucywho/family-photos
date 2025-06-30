@@ -419,16 +419,10 @@ export function PhotoEditForm({
               variant='secondary'
               onClick={handleCancelClick}
               disabled={isPending}
-              aria-label='Cancel editing photo'
             >
               Cancel
             </Button>
-            <Button
-              type='submit'
-              variant='default'
-              disabled={isDisabled()}
-              aria-label='Save photo edits'
-            >
+            <Button type='submit' variant='default' disabled={isDisabled()}>
               Save
             </Button>
           </div>

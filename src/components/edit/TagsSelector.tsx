@@ -93,7 +93,6 @@ export function TagsSelector({
                 className='bg-secondary text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white'
                 onClick={() => onSelect(tag.name)}
                 disabled={pending}
-                aria-label={`select Tag ${tag.name}`}
               >
                 {tag.name.toUpperCase()}
               </button>

@@ -21,6 +21,17 @@ export function Header() {
   const dashboardPage = pathname.startsWith('/dashboard');
   const showAllAlbumsButton = pathname.startsWith('/albums/');
   const showBackToAlbumButton = pathname.startsWith('/photos/');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768); // md breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Get the photo hash from the current URL to preserve scroll position
   useEffect(() => {
@@ -64,6 +75,7 @@ export function Header() {
                 size='sm'
                 asChild
                 className='text-text hover:text-primary hover:bg-secondary relative'
+                aria-label={isMobile ? 'dashboard' : undefined}
               >
                 <Link href='/dashboard'>
                   <LayoutGrid className='h-4 w-4 md:mr-2' />
@@ -79,6 +91,7 @@ export function Header() {
                 size='sm'
                 asChild
                 className='text-text hover:text-primary hover:bg-secondary'
+                aria-label={isMobile ? 'albums' : undefined}
               >
                 <Link href='/albums'>
                   <LibraryBig className='h-4 w-4 md:mr-2' />
@@ -93,6 +106,7 @@ export function Header() {
                 size='sm'
                 asChild
                 className='text-text hover:text-primary hover:bg-secondary'
+                aria-label={isMobile ? 'home' : undefined}
               >
                 <Link href='/'>
                   <Home className='h-4 w-4 md:mr-2' />
@@ -106,6 +120,7 @@ export function Header() {
                 size='sm'
                 asChild
                 className='text-text hover:text-primary hover:bg-secondary'
+                aria-label={isMobile ? 'all albums' : undefined}
               >
                 <Link href='/albums'>
                   <LibraryBig className='h-4 w-4 md:mr-2' />
@@ -113,12 +128,14 @@ export function Header() {
                 </Link>
               </Button>
             )}
+
             {showBackToAlbumButton && albumId && (
               <Button
                 variant='ghost'
                 size='sm'
                 asChild
                 className='text-text hover:text-primary hover:bg-secondary'
+                aria-label={isMobile ? 'back to album' : undefined}
               >
                 <Link href={`/albums/${albumId}${photoHash}`}>
                   <LibraryBig className='h-4 w-4 md:mr-2' />
@@ -133,6 +150,7 @@ export function Header() {
                 size='sm'
                 onClick={handleLogout}
                 className='text-text hover:text-primary hover:bg-secondary'
+                aria-label={isMobile ? 'log out' : undefined}
               >
                 <LogOut className='h-4 w-4 md:mr-2' />
                 <span className='hidden md:inline'>Log out</span>

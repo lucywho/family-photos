@@ -71,7 +71,6 @@ export function AlbumsSelector({
           placeholder='Add or select an album'
           className='border rounded px-2 py-1'
           disabled={pending}
-          aria-label='Add album'
         />
         <Button
           type='button'
@@ -95,7 +94,7 @@ export function AlbumsSelector({
                 className='bg-secondary text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white'
                 onClick={() => onSelect(album)}
                 disabled={pending}
-                aria-label={`Add to album ${album.name}`}
+                aria-label='Add photo to album'
               >
                 {album.name.toUpperCase()}
               </button>
