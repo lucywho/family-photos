@@ -4,6 +4,7 @@ import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/db';
 import { UserRole } from '@prisma/client';
 import { sendVerificationEmail } from '@/lib/email';
+import { PASSWORD_REQUIREMENTS } from '@/lib/constants';
 
 type RegisterState = {
   error: string | null;
@@ -38,8 +39,7 @@ export async function register(
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
   if (!passwordRegex.test(password)) {
     return {
-      error:
-        'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
+      error: PASSWORD_REQUIREMENTS,
       success: false,
     };
   }

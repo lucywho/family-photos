@@ -3,8 +3,7 @@ export const APP_DESCRIPTION = 'View and manage your family photos';
 
 // Auth constants
 export const PASSWORD_MIN_LENGTH = 6;
-export const PASSWORD_REQUIREMENTS =
-  'Password must be at least 6 characters and include a lowercase letter, uppercase letter, and a number';
+export const PASSWORD_REQUIREMENTS = 'Does not meet password requirements';
 
 // Form constants: note upper limits in database schema
 export const MAX_TITLE_LENGTH = 50;

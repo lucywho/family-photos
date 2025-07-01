@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useFormStatus } from 'react-dom';
 import { AlertCircle } from 'lucide-react';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME, PASSWORD_REQUIREMENTS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { register } from '@/app/actions/auth';
 import { useState, useActionState } from 'react';
@@ -31,10 +31,7 @@ const formSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z
     .string()
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/,
-      'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number'
-    ),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/, PASSWORD_REQUIREMENTS),
   privacyAgreement: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the privacy policy',
   }),
@@ -53,6 +50,7 @@ export function RegistrationForm() {
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    mode: 'onBlur',
     defaultValues: {
       username: '',
       email: '',
