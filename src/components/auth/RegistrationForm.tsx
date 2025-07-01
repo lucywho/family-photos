@@ -64,12 +64,13 @@ export function RegistrationForm() {
       <div className='space-y-4 p-6'>
         <Alert>
           <AlertCircle className='h-4 w-4' />
-          <AlertDescription>
+          <AlertDescription data-testid='registration-success-alert'>
             Registration successful! Please check your email to verify your
             account.
           </AlertDescription>
         </Alert>
         <Button
+          data-testid='go-to-login-button'
           variant='secondary'
           className='w-full'
           onClick={() => router.push('/')}
@@ -84,11 +85,7 @@ export function RegistrationForm() {
     <Form {...form}>
       <form
         data-testid='registration-form'
-        action={(formData) => {
-          form.handleSubmit(() => {
-            formAction(formData);
-          })();
-        }}
+        action={formAction}
         className='space-y-4 p-6'
       >
         {state.error && (
@@ -189,6 +186,7 @@ export function RegistrationForm() {
             <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
               <FormControl>
                 <Checkbox
+                  name='privacyAgreement'
                   data-testid='privacy-agreement-check'
                   checked={field.value}
                   onCheckedChange={field.onChange}

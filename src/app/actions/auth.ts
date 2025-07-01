@@ -24,7 +24,7 @@ export async function register(
   const username = formData.get('username') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const privacyAgreement = formData.get('privacyAgreement') === 'true';
+  const privacyAgreement = formData.get('privacyAgreement') === 'on';
 
   // Validate input
   if (!username || !email || !password) {
