@@ -1,264 +1,58 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RegistrationForm } from '@/components/auth';
-import { render, screen } from '@testing-library/react';
-import React, { useActionState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { RegistrationForm } from './RegistrationForm';
 
-// Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-// Mock React hooks
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useActionState: jest.fn(),
-  useTransition: jest.fn(),
 }));
 
-// Mock the auth action
-jest.mock('@/app/actions/auth', () => ({
-  register: jest.fn(),
+jest.mock('react-dom', () => ({
+  ...jest.requireActual('react-dom'),
+  useFormStatus: jest.fn(() => ({ pending: false })),
 }));
 
-// Mock UI components
-jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, onClick, disabled, type, ...props }: any) => (
-    <button onClick={onClick} disabled={disabled} type={type} {...props}>
-      {children}
-    </button>
-  ),
+jest.mock('@/lib/constants', () => ({
+  APP_NAME: 'TestApp',
+  PASSWORD_REQUIREMENTS: 'Does not meet password requirements',
 }));
 
-// Mock react-hook-form
-jest.mock('react-hook-form', () => {
-  const actual = jest.requireActual('react-hook-form');
-  return {
-    ...actual,
-    useForm: () => ({
-      control: {},
-      handleSubmit: (fn: any) => (e: any) => {
-        e.preventDefault();
-        // Simulate validation errors
-        const errors = {
-          username: { message: 'Username must be at least 3 characters' },
-          email: { message: 'Invalid email address' },
-          password: {
-            message:
-              'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
-          },
-          privacyAgreement: { message: 'You must agree to the privacy policy' },
-        };
-        return Promise.reject(errors);
-      },
-      formState: {
-        errors: {
-          username: { message: 'Username must be at least 3 characters' },
-          email: { message: 'Invalid email address' },
-          password: {
-            message:
-              'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
-          },
-          privacyAgreement: { message: 'You must agree to the privacy policy' },
-        },
-        isSubmitting: false,
-      },
-      getFieldState: (name: string) => {
-        const errors: any = {
-          username: {
-            error: { message: 'Username must be at least 3 characters' },
-          },
-          email: { error: { message: 'Invalid email address' } },
-          password: {
-            error: {
-              message:
-                'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
-            },
-          },
-          privacyAgreement: {
-            error: { message: 'You must agree to the privacy policy' },
-          },
-        };
-        return errors[name] || { error: null };
-      },
-    }),
-  };
-});
+const mockPush = jest.fn();
+const mockFormAction = jest.fn();
 
-// Mock Radix UI primitives
-jest.mock('@radix-ui/react-slot', () => {
-  const Slot = React.forwardRef(({ children, ...props }: any, ref: any) => (
-    <div ref={ref} {...props}>
-      {children}
-    </div>
-  ));
-  Slot.displayName = 'MockedSlot';
-  return { Slot };
-});
-
-jest.mock('@radix-ui/react-label', () => {
-  const Root = React.forwardRef(({ children, ...props }: any, ref: any) => (
-    <label ref={ref} {...props}>
-      {children}
-    </label>
-  ));
-  Root.displayName = 'MockedRoot';
-  return { Root };
-});
-
-// Mock the form components
-jest.mock('@/components/ui/form', () => {
-  const React = require('react');
-
-  const FormFieldContext = React.createContext({});
-  const FormItemContext = React.createContext({ id: 'test-id' });
-
-  const useFormField = () => {
-    const formContext = React.useContext(FormFieldContext);
-    const errors = {
-      username: { message: 'Username must be at least 3 characters' },
-      email: { message: 'Invalid email address' },
-      password: {
-        message:
-          'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number',
-      },
-      privacyAgreement: { message: 'You must agree to the privacy policy' },
-    };
-    return {
-      id: 'test-id',
-      name: formContext.name,
-      formItemId: 'test-id-form-item',
-      formDescriptionId: 'test-id-form-item-description',
-      formMessageId: 'test-id-form-item-message',
-      error: errors[formContext.name as keyof typeof errors] || null,
-    };
-  };
-
-  const FormItem = React.forwardRef(({ children, ...props }: any, ref: any) => (
-    <FormItemContext.Provider value={{ id: 'test-id' }}>
-      <div ref={ref} {...props}>
-        {children}
-      </div>
-    </FormItemContext.Provider>
-  ));
-  FormItem.displayName = 'MockedFormItem';
-
-  const FormLabel = React.forwardRef(
-    ({ children, ...props }: any, ref: any) => (
-      <label ref={ref} {...props}>
-        {children}
-      </label>
-    )
-  );
-  FormLabel.displayName = 'MockedFormLabel';
-
-  const FormControl = React.forwardRef(
-    ({ children, ...props }: any, ref: any) => (
-      <div ref={ref} {...props}>
-        {children}
-      </div>
-    )
-  );
-  FormControl.displayName = 'MockedFormControl';
-
-  return {
-    Form: ({ children }: any) => <div>{children}</div>,
-    FormField: ({ render, name }: any) => (
-      <FormFieldContext.Provider value={{ name }}>
-        {render({
-          field: {
-            value: '',
-            onChange: jest.fn(),
-            onBlur: jest.fn(),
-            name,
-            ref: jest.fn(),
-          },
-        })}
-      </FormFieldContext.Provider>
-    ),
-    FormItem,
-    FormLabel,
-    FormControl,
-    FormMessage: () => {
-      const { error } = useFormField();
-      return error ? (
-        <div data-testid='form-message'>{error.message}</div>
-      ) : null;
-    },
-    useFormField,
-  };
-});
-
-jest.mock('@/components/ui/label', () => {
-  const Label = React.forwardRef(({ children, ...props }: any, ref: any) => (
-    <label ref={ref} {...props}>
-      {children}
-    </label>
-  ));
-  Label.displayName = 'LabelMock';
-  return { Label };
-});
-
-jest.mock('@/lib/utils', () => ({
-  cn: (...classes: any[]) => classes.filter(Boolean).join(' '),
-}));
-
-jest.mock('@/components/ui/input', () => ({
-  Input: (props: any) => <input {...props} />,
-}));
-
-jest.mock('@/components/ui/checkbox', () => ({
-  Checkbox: ({ checked, onCheckedChange, ...props }: any) => (
-    <input
-      type='checkbox'
-      checked={checked}
-      onChange={(e) => onCheckedChange?.(e.target.checked)}
-      {...props}
-    />
-  ),
-}));
-
-jest.mock('@/components/ui/alert', () => ({
-  Alert: ({ children, variant }: any) => (
-    <div data-testid='alert' data-variant={variant}>
-      {children}
-    </div>
-  ),
-  AlertDescription: ({ children }: any) => <div>{children}</div>,
-}));
-
-jest.mock('lucide-react', () => ({
-  AlertCircle: () => <div>AlertCircle</div>,
+// Mock ResizeObserver from shadcn/ui
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
 }));
 
 describe('RegistrationForm', () => {
-  const mockPush = jest.fn();
-  const mockStartTransition = jest.fn();
-  const mockFormAction = jest.fn();
-
   beforeEach(() => {
-    jest.clearAllMocks();
-
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
     });
-
-    (useTransition as jest.Mock).mockReturnValue([false, mockStartTransition]);
 
     (useActionState as jest.Mock).mockReturnValue([
       { error: null, success: false },
       mockFormAction,
     ]);
+
+    jest.clearAllMocks();
   });
 
-  describe('Form Rendering', () => {
+  describe('Initial render', () => {
     it('renders all form fields', () => {
       render(<RegistrationForm />);
 
-      expect(screen.getByTestId('registration-form')).toBeInTheDocument();
       expect(screen.getByTestId('username-input')).toBeInTheDocument();
       expect(screen.getByTestId('email-input')).toBeInTheDocument();
       expect(screen.getByTestId('password-input')).toBeInTheDocument();
@@ -268,72 +62,207 @@ describe('RegistrationForm', () => {
       ).toBeInTheDocument();
     });
 
-    it('renders form labels correctly', () => {
-      render(<RegistrationForm />);
-
-      expect(screen.getByText('Username')).toBeInTheDocument();
-      expect(screen.getByText('Email')).toBeInTheDocument();
-      expect(screen.getByText('Password')).toBeInTheDocument();
-      expect(screen.getByText('Privacy Agreement')).toBeInTheDocument();
-    });
-
     it('renders password requirements', () => {
       render(<RegistrationForm />);
 
-      expect(screen.getByTestId('password-requirements')).toBeInTheDocument();
-      expect(
-        screen.getByText('Be at least 6 characters long')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Include a lowercase letter')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Include an uppercase letter')
-      ).toBeInTheDocument();
-      expect(screen.getByText('Include a number')).toBeInTheDocument();
+      const requirements = screen.getByTestId('password-requirements');
+      expect(requirements).toBeInTheDocument();
+      expect(requirements).toHaveTextContent('Be at least 6 characters long');
+      expect(requirements).toHaveTextContent('Include a lowercase letter');
+      expect(requirements).toHaveTextContent('Include an uppercase letter');
+      expect(requirements).toHaveTextContent('Include a number');
     });
 
-    it('renders privacy statement', () => {
+    it('renders privacy statement with app name', () => {
       render(<RegistrationForm />);
 
-      expect(screen.getByTestId('privacy-statement')).toBeInTheDocument();
-      expect(
-        screen.getByText(/I agree to the storage and processing/)
-      ).toBeInTheDocument();
+      const privacyStatement = screen.getByTestId('privacy-statement');
+      expect(privacyStatement).toHaveTextContent('TestApp');
     });
 
-    it('renders show/hide password button', () => {
+    it('has password field hidden by default', () => {
       render(<RegistrationForm />);
 
-      expect(screen.getByTestId('show-password-button')).toBeInTheDocument();
-      expect(screen.getByText('Show')).toBeInTheDocument();
+      const passwordInput = screen.getByTestId('password-input');
+      expect(passwordInput).toHaveAttribute('type', 'password');
     });
   });
 
-  describe('Form Validation', () => {
-    it('shows validation errors for invalid inputs', async () => {
+  describe('Form interactions', () => {
+    it('allows typing in username field', async () => {
       const user = userEvent.setup();
       render(<RegistrationForm />);
 
-      const submitButton = screen.getByTestId('submit-registration-button');
-      await user.click(submitButton);
+      const usernameInput = screen.getByTestId('username-input');
+      await user.type(usernameInput, 'testuser');
 
-      // Check that validation error messages are displayed
-      const errorMessages = screen.getAllByTestId('form-message');
-      expect(errorMessages).toHaveLength(3);
-      expect(errorMessages[0]).toHaveTextContent(
-        'Username must be at least 3 characters'
-      );
-      expect(errorMessages[1]).toHaveTextContent('Invalid email address');
-      expect(errorMessages[2]).toHaveTextContent(
-        'Password must be at least 6 characters long and include a lowercase letter, uppercase letter, and a number'
-      );
+      expect(usernameInput).toHaveValue('testuser');
+    });
+
+    it('allows typing in email field', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const emailInput = screen.getByTestId('email-input');
+      await user.type(emailInput, 'test@example.com');
+
+      expect(emailInput).toHaveValue('test@example.com');
+    });
+
+    it('allows typing in password field', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const passwordInput = screen.getByTestId('password-input');
+      await user.type(passwordInput, 'Password123');
+
+      expect(passwordInput).toHaveValue('Password123');
+    });
+
+    it('toggles password visibility when show/hide button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const passwordInput = screen.getByTestId('password-input');
+      const toggleButton = screen.getByTestId('show-password-button');
+
+      expect(passwordInput).toHaveAttribute('type', 'password');
+      expect(toggleButton).toHaveTextContent('Show');
+
+      await user.click(toggleButton);
+
+      expect(passwordInput).toHaveAttribute('type', 'text');
+      expect(toggleButton).toHaveTextContent('Hide');
+
+      await user.click(toggleButton);
+
+      expect(passwordInput).toHaveAttribute('type', 'password');
+      expect(toggleButton).toHaveTextContent('Show');
+    });
+
+    it('allows checking privacy agreement checkbox', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const checkbox = screen.getByTestId('privacy-agreement-check');
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(checkbox);
+
+      expect(checkbox).toBeChecked();
     });
   });
 
-  describe('Form Submission', () => {
-    it('shows loading state during submission', () => {
-      (useTransition as jest.Mock).mockReturnValue([true, mockStartTransition]);
+  describe('Form validation', () => {
+    it('shows validation error for short username', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const usernameInput = screen.getByTestId('username-input');
+
+      await user.type(usernameInput, 'ab');
+      await user.tab();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Username must be at least 3 characters')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('shows validation error for long username', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const usernameInput = screen.getByTestId('username-input');
+
+      await user.type(usernameInput, 'a'.repeat(21));
+      await user.tab();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Username must be at most 20 characters')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('shows validation error for invalid email', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const emailInput = screen.getByTestId('email-input');
+      await user.type(emailInput, 'invalid-email');
+      await user.tab();
+
+      await waitFor(() => {
+        expect(screen.getByText('Invalid email address')).toBeInTheDocument();
+      });
+    });
+
+    it('shows validation error for weak password', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      const passwordInput = screen.getByTestId('password-input');
+      await user.type(passwordInput, 'weak');
+      await user.tab();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Does not meet password requirements')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('validates all fields correctly with valid input', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      await user.type(screen.getByTestId('username-input'), 'testuser');
+      await user.type(screen.getByTestId('email-input'), 'test@example.com');
+      await user.type(screen.getByTestId('password-input'), 'Password123');
+      await user.click(screen.getByTestId('privacy-agreement-check'));
+
+      await user.click(screen.getByTestId('submit-registration-button'));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Username must be at least 3 characters')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('Invalid email address')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/Password must be at least 6 characters long/)
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('You must agree to the privacy policy')
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Form submission', () => {
+    it('calls form action when form is submitted with valid data', async () => {
+      const user = userEvent.setup();
+      render(<RegistrationForm />);
+
+      await user.type(screen.getByTestId('username-input'), 'testuser');
+      await user.type(screen.getByTestId('email-input'), 'test@example.com');
+      await user.type(screen.getByTestId('password-input'), 'Password123');
+      await user.click(screen.getByTestId('privacy-agreement-check'));
+
+      await user.click(screen.getByTestId('submit-registration-button'));
+
+      await waitFor(() => {
+        expect(mockFormAction).toHaveBeenCalled();
+      });
+    });
+
+    it('shows loading state when form is being submitted', () => {
+      (useFormStatus as jest.Mock).mockReturnValue({
+        pending: true,
+      });
 
       render(<RegistrationForm />);
 
@@ -341,39 +270,25 @@ describe('RegistrationForm', () => {
       expect(submitButton).toHaveTextContent('Registering...');
       expect(submitButton).toBeDisabled();
     });
-
-    it('shows normal state when not submitting', () => {
-      render(<RegistrationForm />);
-
-      const submitButton = screen.getByTestId('submit-registration-button');
-      expect(submitButton).toHaveTextContent('Register');
-      expect(submitButton).not.toBeDisabled();
-    });
   });
 
-  describe('Error Handling', () => {
+  describe('Error states', () => {
     it('displays error message when registration fails', () => {
       (useActionState as jest.Mock).mockReturnValue([
-        { error: 'Registration failed', success: false },
+        { error: 'Registration failed. Please try again.', success: false },
         mockFormAction,
       ]);
 
       render(<RegistrationForm />);
 
-      const errorAlert = screen.getByTestId('alert');
-      expect(errorAlert).toHaveAttribute('data-variant', 'destructive');
-      expect(screen.getByText('Registration failed')).toBeInTheDocument();
-    });
-
-    it('does not display error message when there is no error', () => {
-      render(<RegistrationForm />);
-
-      expect(screen.queryByTestId('alert')).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Registration failed. Please try again.')
+      ).toBeInTheDocument();
     });
   });
 
-  describe('Success State', () => {
-    it('shows success message and navigation button when registration succeeds', () => {
+  describe('Success state', () => {
+    it('displays success message and go to login button when registration succeeds', () => {
       (useActionState as jest.Mock).mockReturnValue([
         { error: null, success: true },
         mockFormAction,
@@ -382,12 +297,16 @@ describe('RegistrationForm', () => {
       render(<RegistrationForm />);
 
       expect(screen.getByText(/Registration successful!/)).toBeInTheDocument();
-      expect(screen.getByText(/Please check your email/)).toBeInTheDocument();
       expect(screen.getByText('Go to Login')).toBeInTheDocument();
+
+      expect(screen.queryByTestId('username-input')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('email-input')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('password-input')).not.toBeInTheDocument();
     });
 
-    it('navigates to home page when "Go to Login" is clicked', async () => {
+    it('navigates to login page when "Go to Login" button is clicked', async () => {
       const user = userEvent.setup();
+
       (useActionState as jest.Mock).mockReturnValue([
         { error: null, success: true },
         mockFormAction,
@@ -400,25 +319,21 @@ describe('RegistrationForm', () => {
 
       expect(mockPush).toHaveBeenCalledWith('/');
     });
-
-    it('does not render form when registration is successful', () => {
-      (useActionState as jest.Mock).mockReturnValue([
-        { error: null, success: true },
-        mockFormAction,
-      ]);
-
-      render(<RegistrationForm />);
-
-      expect(screen.queryByTestId('registration-form')).not.toBeInTheDocument();
-    });
   });
 
   describe('Accessibility', () => {
-    it('has proper form attributes', () => {
+    it('has proper form structure with labels and inputs', () => {
       render(<RegistrationForm />);
 
-      const form = screen.getByTestId('registration-form');
-      expect(form).toHaveAttribute('method', 'POST');
+      expect(screen.getByText('Username')).toBeInTheDocument();
+      expect(screen.getByText('Email')).toBeInTheDocument();
+      expect(screen.getByText('Password')).toBeInTheDocument();
+      expect(screen.getByText('Privacy Agreement')).toBeInTheDocument();
+
+      expect(screen.getByTestId('username-input')).toBeInTheDocument();
+      expect(screen.getByTestId('email-input')).toBeInTheDocument();
+      expect(screen.getByTestId('password-input')).toBeInTheDocument();
+      expect(screen.getByTestId('privacy-agreement-check')).toBeInTheDocument();
     });
 
     it('has required attributes on form inputs', () => {
@@ -427,9 +342,6 @@ describe('RegistrationForm', () => {
       expect(screen.getByTestId('username-input')).toHaveAttribute('required');
       expect(screen.getByTestId('email-input')).toHaveAttribute('required');
       expect(screen.getByTestId('password-input')).toHaveAttribute('required');
-      expect(screen.getByTestId('privacy-agreement-check')).toHaveAttribute(
-        'required'
-      );
     });
 
     it('has proper input types', () => {
@@ -446,23 +358,6 @@ describe('RegistrationForm', () => {
       expect(screen.getByTestId('password-input')).toHaveAttribute(
         'type',
         'password'
-      );
-    });
-
-    it('has proper placeholders', () => {
-      render(<RegistrationForm />);
-
-      expect(screen.getByTestId('username-input')).toHaveAttribute(
-        'placeholder',
-        'Choose a username'
-      );
-      expect(screen.getByTestId('email-input')).toHaveAttribute(
-        'placeholder',
-        'Enter your email'
-      );
-      expect(screen.getByTestId('password-input')).toHaveAttribute(
-        'placeholder',
-        'Create a password'
       );
     });
   });

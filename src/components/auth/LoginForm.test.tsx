@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/navigation';
@@ -188,7 +188,9 @@ describe('LoginForm', () => {
       });
 
       // Resolve the promise
-      resolveSignIn!({ ok: true });
+      await act(async () => {
+        resolveSignIn!({ ok: true });
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Login')).toBeInTheDocument();
@@ -371,7 +373,9 @@ describe('LoginForm', () => {
       expect(mockSignIn).toHaveBeenCalledTimes(1);
 
       // Resolve the promise
-      resolveSignIn!({ ok: true });
+      await act(async () => {
+        resolveSignIn!({ ok: true });
+      });
     });
   });
 });
