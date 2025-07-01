@@ -140,6 +140,7 @@ export default function WelcomePage() {
                 className='w-full flex-1'
                 onClick={handleGuestAccess}
                 disabled={isLoading}
+                data-testid='continue-as-guest-button'
               >
                 {isLoading ? 'Continuing as guest...' : 'Continue as Guest'}
               </Button>
