@@ -13,9 +13,8 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 export async function getUsers() {
   return prisma.user.findMany({
     where: {
-      NOT: {
-        AND: { username: 'Guest' },
-      },
+      emailVerified: true,
+      NOT: [{ username: 'Guest' }, { role: 'GUEST' }],
     },
     orderBy: { username: 'asc' },
   });
@@ -27,7 +26,7 @@ export async function getPendingUsers() {
       role: 'GUEST',
       emailVerified: true,
       NOT: {
-        AND: { username: 'Guest' },
+        username: 'Guest',
       },
     },
     orderBy: { createdAt: 'asc' },
