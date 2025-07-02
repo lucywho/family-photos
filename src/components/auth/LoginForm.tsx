@@ -72,7 +72,7 @@ export function LoginForm() {
       <form
         data-testid='login-form'
         onSubmit={form.handleSubmit(onSubmit)}
-        className='space-y-4'
+        className='space-y-4 pb-0 md:pb-4'
       >
         {loginError && (
           <Alert variant='destructive' data-testid='login-error-message'>

@@ -50,7 +50,7 @@ export function Header() {
   };
 
   return (
-    <header className='bg-background/90 text-primary py-4 px-6 border border-primary border-t-0 border-x-0 fixed top-0 z-50 w-full backdrop-filter backdrop-blur-md bg-opacity-10'>
+    <header className='bg-background/90 text-primary pt-2 md:py-4 md:px-6 border border-primary border-t-0 border-x-0 fixed top-0 z-50 w-full backdrop-filter backdrop-blur-md bg-opacity-10'>
       <div className='container mx-auto flex flex-col md:flex-row items-center justify-between max-w-[1200px]'>
         <div className='flex md:flex-row items-center gap-4'>
           <Camera className='mx-auto text-primary h-9 w-9 md:h-12 md:w-12' />
