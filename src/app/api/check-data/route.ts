@@ -1,8 +1,8 @@
 import { neon } from '@neondatabase/serverless';
+import { NextResponse } from 'next/server';
 
-// @ts-expect-error implicit any, not fixing as this is a temporary file.
-export default async function handler(req, res) {
-  const sql = neon(process.env.DATABASE_URL || '');
+export async function GET() {
+  const sql = neon(process.env.DATABASE_URL!);
 
   try {
     const users = await sql`SELECT id, email, username FROM users LIMIT 5`;
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         (SELECT COUNT(*) FROM photos) as photo_count
     `;
 
-    res.json({
+    return NextResponse.json({
       counts: counts[0],
       sample_users: users,
       sample_albums: albums,
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         ? error.message
         : typeof error === 'string'
         ? error
-        : 'Unknown error';
-    res.status(500).json({ error: message });
+        : 'unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
