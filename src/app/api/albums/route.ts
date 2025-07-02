@@ -98,16 +98,10 @@ export async function GET(request: Request) {
     const transformedAlbums = albums.map((album: Album) => {
       let thumbnailUrl: string | undefined;
 
-      if (isS3Available && album.photos[0]?.url) {
-        const photoUrl = album.photos[0].url;
-        // Use proxy only in development/local environment
-        if (process.env.NEXT_PUBLIC_APP_URL?.includes('localhost')) {
-          thumbnailUrl = `/api/photos/proxy?key=${encodeURIComponent(
-            photoUrl.split('/').pop() || ''
-          )}`;
-        } else {
-          thumbnailUrl = photoUrl;
-        }
+      if (album.photos[0]?.url) {
+        thumbnailUrl = `/api/photos/proxy?key=${encodeURIComponent(
+          album.photos[0].url.split('/').pop() || ''
+        )}`;
       }
 
       return {
