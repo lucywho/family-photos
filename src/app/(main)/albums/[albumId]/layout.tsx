@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlbumLayoutContent } from '@/components/albums';
+import { AlbumLayoutContent } from '@/features/albums/components';
 
 export default function AlbumLayout({
   children,

@@ -4,7 +4,7 @@ import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/db';
 import { UserRole } from '@prisma/client';
 import { sendVerificationEmail } from '@/lib/email';
-import { PASSWORD_REQUIREMENTS } from '@/lib/constants';
+import { PASSWORD_REQUIREMENTS } from '@/shared/constants';
 
 type RegisterState = {
   error: string | null;

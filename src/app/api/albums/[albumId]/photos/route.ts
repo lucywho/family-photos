@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db';
 import { UserRole } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { ITEMS_PER_PAGE } from '@/lib/constants';
+import { ITEMS_PER_PAGE } from '@/shared/constants';
 import { authOptions } from '@/lib/auth-options';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 

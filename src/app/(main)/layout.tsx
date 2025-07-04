@@ -1,5 +1,5 @@
 'use client';
-import { HeaderWrapper } from '@/components/layout';
+import { HeaderWrapper } from '@/shared/components/layout';
 
 export default function MainLayout({
   children,

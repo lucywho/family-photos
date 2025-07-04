@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from '@/app/providers';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME } from '@/shared/constants';
 
 const inter = Inter({ subsets: ['latin'] });
 

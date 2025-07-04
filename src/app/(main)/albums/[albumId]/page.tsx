@@ -1,29 +1,18 @@
 'use client';
 
 import { AlertCircle } from 'lucide-react';
-import { PageTitle } from '@/components/layout';
-import { ITEMS_PER_PAGE } from '@/lib/constants';
+import { PageTitle } from '@/shared/components/layout';
+import { ITEMS_PER_PAGE } from '@/shared/constants';
 import { AlbumProvider } from '@/contexts/AlbumContext';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import React, { useEffect, useState, useRef } from 'react';
-import { Alert, AlertDescription } from '@/components/ui';
-import { PhotoGrid, PhotoSkeleton } from '@/components/photos';
-import { usePhotoPosition } from '@/lib/hooks/usePhotoPosition';
+import { Alert, AlertDescription } from '@/shared/components/ui';
+import { PhotoGrid, PhotoSkeleton } from '@/features/photos/components';
+import { usePhotoPosition } from '@/features/photos/hooks/usePhotoPosition';
+import { Photo, Album } from '@/shared/types/shared-types';
 
-interface Photo {
-  id: number;
-  url: string;
-  title: string | null;
-  date: string | null;
-  notes: string | null;
-  isFamilyOnly: boolean;
-  tags: string[];
-}
-
-interface Album {
-  id: number;
-  name: string;
+interface AlbumWithCount extends Album {
   _count: {
     photos: number;
   };
@@ -34,7 +23,7 @@ interface PhotosResponse {
   hasMore: boolean;
   isS3Available: boolean;
   totalCount: number;
-  album: Album;
+  album: AlbumWithCount;
 }
 
 async function fetchPhotos(

@@ -1,7 +1,7 @@
 'use client';
 
-import { ResetPasswordForm } from '@/components/auth';
-import { Card, CardHeader, CardDescription } from '@/components/ui';
+import { ResetPasswordForm } from '@/features/auth/components';
+import { Card, CardHeader, CardDescription } from '@/shared/components/ui';
 
 export default function ResetPasswordPage() {
   return (
