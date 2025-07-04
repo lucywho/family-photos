@@ -3,8 +3,12 @@
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useFormStatus } from 'react-dom';
-import { AlertCircle } from 'lucide-react';
-import { APP_NAME, PASSWORD_REQUIREMENTS } from '@/lib/constants';
+import { AlertCircle, X } from 'lucide-react';
+import {
+  APP_NAME,
+  PASSWORD_REQUIREMENTS,
+  PRIVACY_STATEMENT,
+} from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { register } from '@/app/actions/auth';
 import { useState, useActionState } from 'react';
@@ -12,6 +16,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
   AlertDescription,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTrigger,
   Button,
   Checkbox,
   Form,
@@ -22,6 +30,7 @@ import {
   FormMessage,
   Input,
 } from '@/components/ui';
+import { AlertDialogTitle } from '@radix-ui/react-alert-dialog';
 
 const formSchema = z.object({
   username: z
@@ -199,12 +208,40 @@ export function RegistrationForm() {
                   data-testid='privacy-statement'
                   className='text-sm text-muted-foreground'
                 >
-                  I agree to the storage and processing of my personal data
-                  (username, email address, and password) for the purpose of
-                  accessing the {APP_NAME} app. My data will be used solely for
-                  authentication and communication purposes. I understand that
-                  my email address will be used for account verification and
-                  password reset requests.
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant='secondary'
+                        size='sm'
+                        className='text-xs wrap'
+                      >
+                        Privacy and cookies statement
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogTitle className='sr-only'>
+                        Privacy and cookies statement
+                      </AlertDialogTitle>
+
+                      <span
+                        className='text-xs md:text-sm'
+                        dangerouslySetInnerHTML={{ __html: PRIVACY_STATEMENT }}
+                      />
+
+                      <AlertDialogTrigger asChild>
+                        <Button className='flex items-center gap-2 w-fit'>
+                          <X className='h-4 w-4 text-warning' />
+                          Close
+                        </Button>
+                      </AlertDialogTrigger>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <p>
+                    I have read the privacy policy and cookies statement and I
+                    agree to the storage and processing of my personal data
+                    (username, email address, and password) for the purpose of
+                    accessing the {APP_NAME} app.
+                  </p>
                 </div>
               </div>
             </FormItem>

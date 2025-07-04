@@ -38,6 +38,7 @@ html {
   input,
   textarea {
     caret-color: hsl(var(--input-text));
+    background-color: hsl(var(--background));
   }
 
   input:focus,
@@ -47,5 +48,10 @@ html {
     caret-color: hsl(var(--background));
     outline: none;
     box-shadow: 0 0 0 2px hsl(var(--focus-ring) / 0.5);
+  }
+
+  textarea:focus {
+    color: hsl(var(--background));
+    background-color: hsl(var(--text));
   }
 }

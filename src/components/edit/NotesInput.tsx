@@ -37,7 +37,7 @@ export function NotesInput({
           {value.length}/{MAX_NOTES_LENGTH} characters
         </span>
         {error && (
-          <span id='notes-error' className='text-destructive'>
+          <span id='notes-error' className='text-warning'>
             {error}
           </span>
         )}
