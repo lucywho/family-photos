@@ -18,7 +18,6 @@ import {
   AlertDescription,
   AlertDialog,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogTrigger,
   Button,
   Checkbox,
