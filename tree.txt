@@ -1,0 +1,195 @@
+.
+├── README.md
+├── backup_20250611_184843.sql
+├── backup_20250702_114550.sql
+├── components.json
+├── cypress.config.ts
+├── data_only_backup.sql
+├── docker-compose.yml
+├── eslint.config.mjs
+├── jest.config.js
+├── jest.setup.js
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── scripts
+│   ├── cleanup-photos.ts
+│   ├── create-admin.ts
+│   ├── generate-password-hash.mjs
+│   └── import-photos.ts
+├── src
+│   ├── app
+│   │   ├── (main)
+│   │   │   ├── albums
+│   │   │   │   ├── [albumId]
+│   │   │   │   │   ├── layout.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── dashboard
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── photos
+│   │   │       └── [photoId]
+│   │   │           ├── page.tsx
+│   │   │           └── photoHandlers.ts
+│   │   ├── actions
+│   │   │   ├── admin.ts
+│   │   │   ├── albums.ts
+│   │   │   ├── auth.ts
+│   │   │   └── photos.ts
+│   │   ├── api
+│   │   │   ├── admin
+│   │   │   │   └── pending-users-count
+│   │   │   │       └── route.ts
+│   │   │   ├── albums
+│   │   │   │   ├── [albumId]
+│   │   │   │   │   ├── photos
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── all
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── check-s3
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── auth
+│   │   │   │   ├── [...nextauth]
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── resend-verification
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── send-reset-email
+│   │   │   │       └── route.ts
+│   │   │   ├── photos
+│   │   │   │   ├── [photoId]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── proxy
+│   │   │   │       └── route.ts
+│   │   │   └── tags
+│   │   │       └── route.ts
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── not-found.tsx
+│   │   ├── page.tsx
+│   │   ├── providers.tsx
+│   │   ├── reset-password
+│   │   │   ├── confirm
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   └── verify-email
+│   │       └── page.tsx
+│   ├── contexts
+│   │   └── AlbumContext.tsx
+│   ├── features
+│   │   ├── albums
+│   │   │   ├── components
+│   │   │   │   ├── AlbumGrid.tsx
+│   │   │   │   ├── AlbumLayoutContent.tsx
+│   │   │   │   ├── AlbumSkeleton.tsx
+│   │   │   │   ├── AlbumsPageContents.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── data
+│   │   │   ├── hooks
+│   │   │   ├── services
+│   │   │   └── types.ts
+│   │   ├── auth
+│   │   │   ├── components
+│   │   │   │   ├── ConfirmResetPasswordForm.tsx
+│   │   │   │   ├── LoginForm.test.tsx
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── RegistrationForm.test.tsx
+│   │   │   │   ├── RegistrationForm.tsx
+│   │   │   │   ├── ResetPassword.test.tsx
+│   │   │   │   ├── ResetPasswordForm.tsx
+│   │   │   │   ├── VerifyEmailContent.tsx
+│   │   │   │   ├── VerifySkeleton.tsx
+│   │   │   │   └── index.ts
+│   │   │   └── types
+│   │   │       └── next-auth.d.ts
+│   │   ├── dashboard
+│   │   │   └── components
+│   │   │       ├── AlbumAdmin.tsx
+│   │   │       ├── DashboardPageContents.tsx
+│   │   │       ├── DashboardSkeleton.tsx
+│   │   │       ├── SubmitButton.tsx
+│   │   │       ├── TagAdmin.tsx
+│   │   │       ├── UserAdmin.tsx
+│   │   │       ├── UserApprovalRow.tsx
+│   │   │       ├── UserManagementRow.tsx
+│   │   │       └── index.ts
+│   │   ├── notifications
+│   │   ├── photos
+│   │   │   ├── components
+│   │   │   │   ├── CancelAlert.tsx
+│   │   │   │   ├── PhotoDisplay.tsx
+│   │   │   │   ├── PhotoEditForm.tsx
+│   │   │   │   ├── PhotoGrid.tsx
+│   │   │   │   ├── PhotoInfo.tsx
+│   │   │   │   ├── PhotoNavigation.tsx
+│   │   │   │   ├── PhotoSkeleton.tsx
+│   │   │   │   ├── edit
+│   │   │   │   │   ├── AlbumsSelector.tsx
+│   │   │   │   │   ├── DateInput.tsx
+│   │   │   │   │   ├── FamilyOnlyCheckbox.tsx
+│   │   │   │   │   ├── NotesInput.tsx
+│   │   │   │   │   ├── TagsSelector.tsx
+│   │   │   │   │   ├── TitleInput.tsx
+│   │   │   │   │   └── index.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── hooks
+│   │   │   │   ├── usePhotoNavigation.ts
+│   │   │   │   └── usePhotoPosition.ts
+│   │   │   └── types
+│   │   │       └── photo.ts
+│   │   ├── tags
+│   │   └── users
+│   ├── lib
+│   │   ├── admin-auth.ts
+│   │   ├── auth-options.ts
+│   │   ├── db.ts
+│   │   ├── email.ts
+│   │   ├── env.ts
+│   │   └── schemas
+│   │       └── photo.ts
+│   └── shared
+│       ├── components
+│       │   ├── layout
+│       │   │   ├── Header.tsx
+│       │   │   ├── HeaderWrapper.tsx
+│       │   │   ├── PageTitle.tsx
+│       │   │   ├── PendingUsersBadge.tsx
+│       │   │   └── index.ts
+│       │   └── ui
+│       │       ├── alert-dialog.tsx
+│       │       ├── alert.tsx
+│       │       ├── badge.tsx
+│       │       ├── button.tsx
+│       │       ├── card.tsx
+│       │       ├── checkbox.tsx
+│       │       ├── form.tsx
+│       │       ├── index.ts
+│       │       ├── input.tsx
+│       │       ├── label.tsx
+│       │       ├── skeleton.tsx
+│       │       ├── sonner.tsx
+│       │       ├── tabs.tsx
+│       │       ├── tooltip.tsx
+│       │       └── utils.ts
+│       ├── constants.ts
+│       ├── hooks
+│       ├── types
+│       │   └── shared-types.ts
+│       └── utils
+│           ├── test-utils.tsx
+│           └── utils.ts
+├── tailwind.config.js
+├── tree.txt
+└── tsconfig.json
+
+61 directories, 132 files

@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import {
   DashboardSkeleton,
   DashboardPageContents,
-} from '@/components/dashboard';
+} from '@/features/dashboard/components';
 
 export default async function DashboardPage() {
   return (

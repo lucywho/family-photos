@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { randomBytes } from 'crypto';
-import { APP_NAME } from './constants';
+import { APP_NAME } from '../shared/constants';
 import { createTransport } from 'nodemailer';
 
 const transporter = createTransport({

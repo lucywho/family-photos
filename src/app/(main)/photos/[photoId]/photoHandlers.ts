@@ -1,19 +1,7 @@
-import { normalizePhoto } from '@/lib/utils';
-import { type Photo, type AlbumPhoto } from '@/types/photo';
+import { normalizePhoto } from '@/shared/utils/utils';
+import { AlbumPhoto } from '@/features/photos/types/photo';
 
-interface Tag {
-  id: number;
-  name: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
-
-interface Album {
-  id: number;
-  name: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
+import { Photo, Tag, Album } from '@/shared/types/shared-types';
 
 export const createPhotoHandlers = (
   setIsLoading: (loading: boolean) => void,

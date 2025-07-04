@@ -1,33 +1,25 @@
 'use client';
 
-import { normalizePhoto } from '@/lib/utils';
+import { normalizePhoto } from '@/shared/utils/utils';
 import { useSession } from 'next-auth/react';
-import { MAX_RETRIES } from '@/lib/constants';
+import { MAX_RETRIES } from '@/shared/constants';
 import React, { useState, useEffect } from 'react';
 import { createPhotoHandlers } from './photoHandlers';
-import { Button, Card, CardContent } from '@/components/ui';
+import { Button, Card, CardContent } from '@/shared/components/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { usePhotoNavigation } from '@/lib/hooks/usePhotoNavigation';
+import { usePhotoNavigation } from '@/features/photos/hooks/usePhotoNavigation';
 import {
   PhotoDisplay,
   PhotoInfo,
   PhotoNavigation,
   PhotoEditForm,
-} from '@/components/photos';
+} from '@/features/photos/components';
 
-import { Photo, PhotoPageProps } from '@/types/photo';
-interface Tag {
-  id: number;
-  name: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-}
+import { Photo, Tag, Album } from '@/shared/types/shared-types';
+import { PhotoPageProps } from '@/features/photos/types/photo';
 
-interface Album {
-  id: number;
-  name: string;
-  createdAt: string | Date;
-  updatedAt: string | Date;
+interface PhotoWithAlbums extends Photo {
+  albums?: Album[];
 }
 
 export default function PhotoPage({ params }: PhotoPageProps) {
@@ -35,7 +27,7 @@ export default function PhotoPage({ params }: PhotoPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [photo, setPhoto] = useState<Photo | null>(null);
+  const [photo, setPhoto] = useState<PhotoWithAlbums | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);

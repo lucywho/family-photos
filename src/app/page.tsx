@@ -6,8 +6,8 @@ import { Camera } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { continueAsGuest } from './actions/auth';
 import { signIn, signOut } from 'next-auth/react';
-import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
-import { LoginForm, RegistrationForm } from '@/components/auth';
+import { APP_NAME, APP_DESCRIPTION } from '@/shared/constants';
+import { LoginForm, RegistrationForm } from '@/features/auth/components';
 import {
   Button,
   Card,
@@ -15,7 +15,7 @@ import {
   CardFooter,
   CardDescription,
   CardContent,
-} from '@/components/ui';
+} from '@/shared/components/ui';
 
 export default function WelcomePage() {
   const router = useRouter();

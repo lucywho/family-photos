@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui';
-import { APP_NAME } from '@/lib/constants';
+import { Button } from '@/shared/components/ui';
+import { APP_NAME } from '@/shared/constants';
 
 export default function NotFoundPage() {
   return (

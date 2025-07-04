@@ -1,12 +1,12 @@
 import React from 'react';
-import { ConfirmResetPasswordForm } from '@/components/auth';
+import { ConfirmResetPasswordForm } from '@/features/auth/components';
 import {
   Button,
   Card,
   CardHeader,
   CardFooter,
   CardDescription,
-} from '@/components/ui';
+} from '@/shared/components/ui';
 
 export default function ConfirmResetPasswordPage({
   searchParams,

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { randomBytes } from 'crypto';
-import { APP_NAME } from '@/lib/constants';
+import { APP_NAME } from '@/shared/constants';
 import { NextResponse } from 'next/server';
 import { createTransport } from 'nodemailer';
 

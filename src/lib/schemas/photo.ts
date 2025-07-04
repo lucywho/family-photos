@@ -6,7 +6,7 @@ import {
   MAX_NOTES_LENGTH,
   MAX_ALBUM_NAME_LENGTH,
   MAX_TAG_LENGTH,
-} from '../constants';
+} from '../../shared/constants';
 
 // Custom date validation for dd/mm/yyyy format
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
