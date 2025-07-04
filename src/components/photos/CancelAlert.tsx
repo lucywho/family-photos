@@ -32,14 +32,14 @@ export function CancelAlert({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant='secondary' className='my-0 mr-4'>
+            <Button className='mr-4 w-full bg-primary text-text'>
               Continue editing
             </Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
             <Button
               variant='destructive'
-              className='my-4'
+              className='my-4 w-full bg-destructive/80 text-background hover:bg-destructive'
               onClick={() => {
                 setShowConfirmModal(false);
                 onCancel();

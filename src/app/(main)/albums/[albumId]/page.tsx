@@ -243,7 +243,11 @@ function GalleryView({ albumId }: { albumId: number }) {
       <div className='container mx-auto p-4'>
         <Alert variant='destructive'>
           <AlertCircle className='h-4 w-4' />
-          <AlertDescription>Sorry, something has gone wrong</AlertDescription>
+          <AlertDescription>
+            Sorry, something has gone wrong. You may have been automatically
+            logged out after a period of inactivity. Please try logging in
+            again. If the problem persists, please contact the administrator.
+          </AlertDescription>
         </Alert>
       </div>
     );
