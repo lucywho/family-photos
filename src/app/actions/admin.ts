@@ -122,7 +122,7 @@ export async function createAlbum(formData: FormData) {
   const name = formData.get('name');
   const validatedFields = AlbumNameSchema.safeParse({ name });
   if (!validatedFields.success)
-    return { success: false, message: validatedFields.error.errors[0].message };
+    return { success: false, message: validatedFields.error.issues[0].message };
 
   // Check uniqueness
   const exists = await prisma.album.findFirst({
@@ -148,7 +148,7 @@ export async function editAlbum(albumId: number, formData: FormData) {
   const name = formData.get('name');
   const validatedFields = AlbumNameSchema.safeParse({ name });
   if (!validatedFields.success)
-    return { success: false, message: validatedFields.error.errors[0].message };
+    return { success: false, message: validatedFields.error.issues[0].message };
 
   // Prevent renaming 'All Photos'
   const album = await prisma.album.findUnique({ where: { id: albumId } });
@@ -221,7 +221,7 @@ export async function createTag(formData: FormData) {
   const name = formData.get('name');
   const parsed = TagNameSchema.safeParse(name);
   if (!parsed.success)
-    return { success: false, message: parsed.error.errors[0].message };
+    return { success: false, message: parsed.error.issues[0].message };
 
   // Case-insensitive uniqueness check
   const exists = await prisma.tag.findFirst({
@@ -246,7 +246,7 @@ export async function editTag(tagId: number, formData: FormData) {
   const name = formData.get('name');
   const parsed = TagNameSchema.safeParse(name);
   if (!parsed.success)
-    return { success: false, message: parsed.error.errors[0].message };
+    return { success: false, message: parsed.error.issues[0].message };
 
   // Case-insensitive uniqueness check
   const exists = await prisma.tag.findFirst({
