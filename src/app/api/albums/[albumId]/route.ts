@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import { prisma } from '@/lib/db';
+import { AlbumRepository } from '@/features/albums/data/albumRepository';
 
 export async function GET(
   request: Request,
@@ -19,16 +19,8 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid album ID' }, { status: 400 });
     }
 
-    const album = await prisma.album.findUnique({
-      where: { id: albumId },
-      select: {
-        id: true,
-        name: true,
-        _count: {
-          select: { photos: true },
-        },
-      },
-    });
+    const repo = new AlbumRepository();
+    const album = await repo.findById(albumId);
 
     if (!album) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 });

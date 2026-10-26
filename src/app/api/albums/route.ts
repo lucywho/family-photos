@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { AlbumRepository } from '@/features/albums/data/albumRepository';
 
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_S3_BUCKET_REGION,
@@ -48,42 +49,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get albums data first
+    // Pagination params
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
 
-    // Get total count for pagination
-    const totalCount = await prisma.album.count();
-
-    // Get albums with their first photo for thumbnail
-    const albums = await prisma.album.findMany({
-      skip,
-      take: limit,
-      orderBy: {
-        name: 'asc',
-      },
-      include: {
-        _count: {
-          select: {
-            photos: true,
-          },
-        },
-        photos: {
-          where: { isFamilyOnly: false },
-          take: 1,
-          orderBy: [
-            {
-              id: 'asc',
-            },
-          ],
-          select: {
-            url: true,
-          },
-        },
-      },
-    });
+    const repo = new AlbumRepository();
+    const totalCount = await repo.countAll();
+    const albums = await repo.findPaginatedWithThumbnails(skip, limit);
 
     // Check S3 availability separately
     let isS3Available = false;
@@ -121,9 +95,6 @@ export async function GET(request: Request) {
   } catch (error) {
     // Only return error for non-S3 related issues
     console.error('Error fetching albums:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch albums' },
-      { status: 500 }
-    );
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

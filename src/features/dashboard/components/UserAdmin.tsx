@@ -1,24 +1,17 @@
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth-options';
-import { getPendingUsers, getUsers } from '@/lib/db';
 import UserApprovalRow from './UserApprovalRow';
 import UserManagementRow from './UserManagementRow';
+import { User } from '@prisma/client';
 
 interface UserAdminProps {
-  showAllUsers?: boolean;
+  users?: User[];
+  pendingUsers?: User[];
 }
 
-export async function UserAdmin({ showAllUsers = false }: UserAdminProps) {
-  const session = await getServerSession(authOptions);
+export function UserAdmin({ users, pendingUsers }: UserAdminProps) {
+  const showAllUsers = !!users;
+  const userList = users || pendingUsers || [];
 
-  if (!session || session.user?.role !== 'ADMIN') {
-    redirect('/not-found');
-  }
-
-  const users = showAllUsers ? await getUsers() : await getPendingUsers();
-
-  if (!users || users.length === 0) {
+  if (!userList.length) {
     return (
       <div className='min-h-screen mt-4 rounded-lg border border-dashed p-8 text-center'>
         <h3 className='text-lg font-semibold'>
@@ -54,7 +47,7 @@ export async function UserAdmin({ showAllUsers = false }: UserAdminProps) {
             </tr>
           </thead>
           <tbody className='divide-y divide-border md:divide-y-0'>
-            {users.map((user) =>
+            {userList.map((user) =>
               showAllUsers ? (
                 <UserManagementRow key={user.id} user={user} />
               ) : (

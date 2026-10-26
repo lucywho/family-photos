@@ -6,7 +6,11 @@ import { MAX_TAG_LENGTH } from '@/shared/constants';
 import { getTagsWithPhotoCount } from '@/lib/db';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import { useRef, useState, useTransition } from 'react';
-import { createTag, editTag, deleteTag } from '@/app/actions/admin';
+import {
+  createTag,
+  editTag,
+  deleteTag,
+} from '@/features/tags/services/tagServices';
 import {
   Button,
   AlertDialog,

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { AlbumRepository } from '@/features/albums/data/albumRepository';
 
 export async function GET() {
   try {
-    const albums = await prisma.album.findMany({ orderBy: { name: 'asc' } });
+    const repo = new AlbumRepository();
+    const albums = await repo.findAll();
     return NextResponse.json(albums);
   } catch (error) {
     console.error('Error fetching albums:', error);

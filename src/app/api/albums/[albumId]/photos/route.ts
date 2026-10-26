@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { ITEMS_PER_PAGE } from '@/shared/constants';
 import { authOptions } from '@/lib/auth-options';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { AlbumRepository } from '@/features/albums/data/albumRepository';
 
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_S3_BUCKET_REGION,
@@ -57,14 +58,8 @@ export async function GET(
     const albumId = await getAlbumId(params);
 
     // Get the album
-    const album = await prisma.album.findUnique({
-      where: { id: albumId },
-      include: {
-        _count: {
-          select: { photos: true },
-        },
-      },
-    });
+    const repo = new AlbumRepository();
+    const album = await repo.findById(albumId);
 
     if (!album) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 });

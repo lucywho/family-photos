@@ -6,11 +6,7 @@ import { Edit, Trash2, Plus } from 'lucide-react';
 import { getAlbumsWithPhotoCount } from '@/lib/db';
 import { MAX_ALBUM_NAME_LENGTH } from '@/shared/constants';
 import { useRef, useState, useTransition } from 'react';
-import {
-  createAlbum,
-  editAlbum,
-  deleteAlbum,
-} from '@/features/albums/services/albumServices';
+import { createAlbum, editAlbum, deleteAlbum } from '@/app/actions/albums';
 import {
   AlertDialog,
   AlertDialogAction,
