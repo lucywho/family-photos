@@ -42,3 +42,7 @@ next-env.d.ts
 
 # utility scripts
 scripts/*
+
+# local database dumps (never commit)
+/*.sql
+*.dump
