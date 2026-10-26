@@ -102,8 +102,10 @@ export async function updatePhoto(
 
     if (error instanceof z.ZodError) {
       const fieldErrors: Record<string, string[]> = {};
-      for (const [key, value] of Object.entries(error.formErrors.fieldErrors)) {
-        if (value) fieldErrors[key] = value;
+      for (const [key, value] of Object.entries(
+        z.flattenError(error).fieldErrors
+      )) {
+        if (value) fieldErrors[key] = value as string[];
       }
 
       return {
