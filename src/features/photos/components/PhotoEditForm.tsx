@@ -181,6 +181,7 @@ export function PhotoEditForm({
       onSave({
         ...photo,
         ...formState.data,
+        date: formState.data.date ? formState.data.date.toISOString() : null,
         albums: (formState.data.albums || []).map(
           (a: { id?: number; name: string }) => ({
             id: a.id ?? 0,

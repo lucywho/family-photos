@@ -21,7 +21,7 @@ export async function createTag(formData: FormData) {
   const name = formData.get('name');
   const parsed = TagNameSchema.safeParse(name);
   if (!parsed.success)
-    return { success: false, message: parsed.error.errors[0].message };
+    return { success: false, message: parsed.error.issues[0].message };
 
   // Case-insensitive uniqueness check
   const exists = await prisma.tag.findFirst({
@@ -46,7 +46,7 @@ export async function editTag(tagId: number, formData: FormData) {
   const name = formData.get('name');
   const parsed = TagNameSchema.safeParse(name);
   if (!parsed.success)
-    return { success: false, message: parsed.error.errors[0].message };
+    return { success: false, message: parsed.error.issues[0].message };
 
   // Case-insensitive uniqueness check
   const exists = await prisma.tag.findFirst({
